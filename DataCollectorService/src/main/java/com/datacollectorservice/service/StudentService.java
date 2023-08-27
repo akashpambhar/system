@@ -1,17 +1,23 @@
 package com.datacollectorservice.service;
 
 import com.datacollectorservice.exception.CustomException;
+import com.datacollectorservice.model.Marks;
 import com.datacollectorservice.model.Student;
 import com.datacollectorservice.repository.StudentRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class StudentService {
@@ -28,23 +34,47 @@ public class StudentService {
 
     public void processCsvMarks(MultipartFile csvFile) {
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(csvFile.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] data = line.split(",");
-                if (data.length == 3) {
-                    Student student = new Student();
+            String content = new String(csvFile.getBytes(), StandardCharsets.UTF_8);
+            Map<String, Object> jsonMap = convertToJson(content);
 
-                    student.setStudentName(data[0]);
+            Student student = new Student();
+            student.setStudentName(jsonMap.get("studentName").toString());
+            student.setMarks((List<Marks>) jsonMap.get("marks"));
 
-                    studentRepository.save(student);
-                } else throw new CustomException("Format miss match");
-            }
+            studentRepository.save(student);
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (CustomException e) {
-            throw new RuntimeException(e);
+            logger.error("An IO exception occurred while processing the CSV file:", e);
+            throw new RuntimeException("Error processing CSV file", e);
+        } catch (Exception e) {
+            logger.error("An error occurred while processing the CSV content:", e);
+            throw new RuntimeException("Error processing CSV content", e);
         }
+
         logger.info("Marks got saved");
+    }
+
+    public List<Student> getAllStudents() {
+        return studentRepository.findAll();
+    }
+
+    public Optional<Student> getStudentById(String Id) {
+        return studentRepository.findById(Id);
+    }
+
+    public ResponseEntity<Optional<Student>> getStudentByName(String Name) throws CustomException {
+
+        Optional<Student> student = studentRepository.findByStudentNameIgnoreCase(Name);
+
+        if (student.isEmpty()) {
+            throw new CustomException("Name does not exist");
+        }
+
+        return new ResponseEntity<>(student, HttpStatus.OK);
+
+    }
+
+    public Map<String, Object> convertToJson(String content) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(content, Map.class);
     }
 }
