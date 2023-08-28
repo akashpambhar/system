@@ -6,3 +6,5 @@
 *.orig
 classes/
 out/
+Dashboard/.angular
+Dashboard/node_modules
