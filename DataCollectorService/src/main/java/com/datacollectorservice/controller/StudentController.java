@@ -35,8 +35,8 @@ public class StudentController {
     }
 
     @PostMapping("/marks/json")
-    public String receiveJsonMarks(@RequestBody Student student) {
-        studentService.processJsonMarks(student);
+    public String receiveJsonMarks(@RequestBody List<Student> students) {
+        studentService.processJsonMarks(students);
         return "JSON data received successfully";
     }
 
