@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,9 +28,14 @@ public class StudentService {
     @Autowired
     private StudentRepository studentRepository;
 
+    @Autowired
+    private KafkaTemplate<String, Student> kafkaTemplate;
+
     public void processJsonMarks(Student student) {
         studentRepository.save(student);
         logger.info("Marks got saved");
+        logger.info("Sending message to Kafka topic");
+        kafkaTemplate.send("student_marks", student);
     }
 
     public void processCsvMarks(MultipartFile csvFile) {
@@ -62,15 +68,12 @@ public class StudentService {
     }
 
     public ResponseEntity<Optional<Student>> getStudentByName(String Name) throws CustomException {
-
         Optional<Student> student = studentRepository.findByStudentNameIgnoreCase(Name);
-
         if (student.isEmpty()) {
             throw new CustomException("Name does not exist");
         }
 
         return new ResponseEntity<>(student, HttpStatus.OK);
-
     }
 
     public Map<String, Object> convertToJson(String content) throws IOException {
