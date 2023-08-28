@@ -48,6 +48,7 @@ public class StudentService {
             student.setMarks((List<Marks>) jsonMap.get("marks"));
 
             studentRepository.save(student);
+            kafkaTemplate.send("student_marks", student);
         } catch (IOException e) {
             logger.error("An IO exception occurred while processing the CSV file:", e);
             throw new RuntimeException("Error processing CSV file", e);
