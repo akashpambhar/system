@@ -41,7 +41,7 @@ public class StudentService {
         schoolRepository.save(school);
         logger.info("Marks got saved");
         logger.info("Sending message to Kafka topic");
-//        kafkaTemplate.send("student_marks", school);
+        kafkaTemplate.send("student_marks", school);
     }
 
     public void processCsvMarks(MultipartFile csvFile) {
@@ -52,7 +52,7 @@ public class StudentService {
             studentRepository.saveAll(school.getStudents());
 
             schoolRepository.save(school);
-//            kafkaTemplate.send("student_marks", school);
+            kafkaTemplate.send("student_marks", school);
         } catch (IOException e) {
             logger.error("An IO exception occurred while processing the CSV file:", e);
             throw new RuntimeException("Error processing CSV file", e);
@@ -93,8 +93,6 @@ public class StudentService {
     }
 
     public List<ChartData> getChartData() {
-        List<ChartData> ld = schoolRepository.groupByCreationDate();
-        logger.info(ld.get(0).toString());
-        return ld;
+        return schoolRepository.groupByCreationDate();
     }
 }

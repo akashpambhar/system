@@ -30,26 +30,34 @@ export class StudentComponent implements OnInit {
   constructor(private studentService: StudentService, private route: ActivatedRoute, private cd: ChangeDetectorRef) { }
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
-      this.studentId = String(params.get('id'));
-      this.showMarks(this.studentId);
-    });
+    this.showMarks();
+    setInterval(() => {
+      this.showMarks();
+    }, 5000);
   }
 
-  showMarks(studentId: string): void {
-    this.studentService.getStudentById(studentId).subscribe(student => {
-      this.selectedStudent = student;
+  showMarks(): void {
+    this.studentService.getChartData().subscribe(chartData => {
       const labels: string[] = [];
       const data: number[] = [];
 
-      for (const mark of this.selectedStudent.marks) {
-        labels.push(mark.subjectName);
-        data.push(mark.marks);
+      for (const d of chartData) {
+        const da = new Date(d.id)
+        console.log(d.id);
+
+        const parts = d.id.split(" ");
+        const month = parts[1];
+        const day = parseInt(parts[2]);
+        const time = parts[3];
+        const year = parseInt(parts[5]);
+
+        labels.push(`${time}\n${year}-${month}-${day}`);
+        data.push(d.studentCount);
       }
 
       const updatedChartData: ChartData<'bar'> = {
         labels: labels,
-        datasets: [{ data: data, label: this.selectedStudent.studentName }]
+        datasets: [{ data: data, label: 'Students' }]
       };
 
       this.barChartData = updatedChartData;

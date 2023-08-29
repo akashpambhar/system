@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class ChartData {
 
     private String id;
-    private int count;
+    private int studentCount;
 }

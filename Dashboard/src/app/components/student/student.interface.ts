@@ -9,3 +9,8 @@ export interface Marks {
   subjectName: string;
   marks: number;
 }
+
+export interface ChartData {
+  id: string;
+  studentCount: number;
+}
