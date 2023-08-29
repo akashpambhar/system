@@ -1,8 +1,10 @@
 package com.datacollectorservice.service;
 
+import com.datacollectorservice.dto.ChartData;
 import com.datacollectorservice.exception.CustomException;
-import com.datacollectorservice.model.Marks;
+import com.datacollectorservice.model.School;
 import com.datacollectorservice.model.Student;
+import com.datacollectorservice.repository.SchoolRepository;
 import com.datacollectorservice.repository.StudentRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,9 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -31,46 +31,28 @@ public class StudentService {
     private StudentRepository studentRepository;
 
     @Autowired
-    private KafkaTemplate<String, List<Student>> kafkaTemplate;
+    private SchoolRepository schoolRepository;
 
-    public void processJsonMarks(List<Student> students) {
-        studentRepository.saveAll(students);
+    @Autowired
+    private KafkaTemplate<String, School> kafkaTemplate;
+
+    public void processJsonMarks(School school) {
+        studentRepository.saveAll(school.getStudents());
+        schoolRepository.save(school);
         logger.info("Marks got saved");
         logger.info("Sending message to Kafka topic");
-        kafkaTemplate.send("student_marks", students);
+//        kafkaTemplate.send("student_marks", school);
     }
 
     public void processCsvMarks(MultipartFile csvFile) {
         try {
             String content = new String(csvFile.getBytes(), StandardCharsets.UTF_8);
-            List<Map<String, Object>> studentMaps = convertCsvToListOfMaps(content);
+            School school = convertCsv(content);
 
-            List<Student> students = new ArrayList<>();
+            studentRepository.saveAll(school.getStudents());
 
-            for (Map<String, Object> studentMap : studentMaps) {
-                String studentName = (String) studentMap.get("studentName");
-                List<Map<String, Object>> marks = (List<Map<String, Object>>) studentMap.get("marks");
-
-                Student student = new Student();
-                student.setStudentName(studentName);
-
-                List<Marks> marksList = new ArrayList<>();
-                for (Map<String, Object> markMap : marks) {
-                    String subjectName = (String) markMap.get("subjectName");
-                    Double mark = (Double) markMap.get("marks");
-
-                    Marks marksObj = new Marks();
-                    marksObj.setSubjectName(subjectName);
-                    marksObj.setMarks(mark);
-                    marksList.add(marksObj);
-                }
-
-                student.setMarks(marksList);
-                students.add(student);
-            }
-
-            studentRepository.saveAll(students);
-            kafkaTemplate.send("student_marks", students);
+            schoolRepository.save(school);
+//            kafkaTemplate.send("student_marks", school);
         } catch (IOException e) {
             logger.error("An IO exception occurred while processing the CSV file:", e);
             throw new RuntimeException("Error processing CSV file", e);
@@ -90,24 +72,29 @@ public class StudentService {
         return studentRepository.findById(Id);
     }
 
-    public ResponseEntity<Optional<Student>> getStudentByName(String Name) throws CustomException {
-        Optional<Student> student = studentRepository.findByStudentNameIgnoreCase(Name);
-        if (student.isEmpty()) {
+    public ResponseEntity<List<Student>> getStudentByName(String name) throws CustomException {
+        List<Student> students = studentRepository.findByStudentNameIgnoreCase(name);
+        if (students.isEmpty()) {
             throw new CustomException("Name does not exist");
         }
 
-        return new ResponseEntity<>(student, HttpStatus.OK);
+        return new ResponseEntity<>(students, HttpStatus.OK);
     }
 
-    private List<Map<String, Object>> convertCsvToListOfMaps(String csvContent) {
+    private School convertCsv(String csvContent) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            TypeReference<List<Map<String, Object>>> typeReference = new TypeReference<>() {
-            };
-            return objectMapper.readValue(csvContent, typeReference);
+            return objectMapper.readValue(csvContent, new TypeReference<>() {
+            });
         } catch (IOException e) {
             logger.error("Error converting CSV content to list of maps:", e);
             throw new RuntimeException("Error converting CSV content", e);
         }
+    }
+
+    public List<ChartData> getChartData() {
+        List<ChartData> ld = schoolRepository.groupByCreationDate();
+        logger.info(ld.get(0).toString());
+        return ld;
     }
 }

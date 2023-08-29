@@ -1,6 +1,8 @@
 package com.datacollectorservice.controller;
 
+import com.datacollectorservice.dto.ChartData;
 import com.datacollectorservice.exception.CustomException;
+import com.datacollectorservice.model.School;
 import com.datacollectorservice.model.Student;
 import com.datacollectorservice.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +32,13 @@ public class StudentController {
     }
 
     @GetMapping("/student/name/{name}")
-    public ResponseEntity<Optional<Student>> getStudentByName(@PathVariable String name) throws CustomException {
+    public ResponseEntity<List<Student>> getStudentByName(@PathVariable String name) throws CustomException {
         return studentService.getStudentByName(name);
     }
 
     @PostMapping("/marks/json")
-    public String receiveJsonMarks(@RequestBody List<Student> students) {
-        studentService.processJsonMarks(students);
+    public String receiveJsonMarks(@RequestBody School school) {
+        studentService.processJsonMarks(school);
         return "JSON data received successfully";
     }
 
@@ -44,5 +46,10 @@ public class StudentController {
     public String receiveCsvMarks(@RequestParam("file") MultipartFile csvFile) {
         studentService.processCsvMarks(csvFile);
         return "CSV file received successfully";
+    }
+
+    @GetMapping(value = "/chart")
+    public List<ChartData> chartData(){
+        return studentService.getChartData();
     }
 }
