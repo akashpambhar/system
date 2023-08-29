@@ -40,7 +40,7 @@ public class StudentController {
         return "JSON data received successfully";
     }
 
-    @PostMapping("/marks/csv")
+    @PostMapping(value = "/marks/csv", consumes = "multipart/form-data")
     public String receiveCsvMarks(@RequestParam("file") MultipartFile csvFile) {
         studentService.processCsvMarks(csvFile);
         return "CSV file received successfully";
