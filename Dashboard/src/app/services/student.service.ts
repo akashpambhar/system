@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ChartData, Student } from '../components/student/student.interface';
+import { IChartData, Student } from '../components/student/student.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +24,7 @@ export class StudentService {
     return this.http.get<Student>(`${this.apiUrl}/student/name/${name}`);
   }
 
-  getChartData(): Observable<ChartData[]> {
-    return this.http.get<ChartData[]>(`${this.apiUrl}/chart`);
+  getChartData(): Observable<IChartData[]> {
+    return this.http.get<IChartData[]>(`${this.apiUrl}/chart`);
   }
 }

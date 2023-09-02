@@ -11,10 +11,4 @@ import java.util.List;
 @Repository
 public interface SchoolRepository extends MongoRepository<School, String> {
 
-    @Aggregation(pipeline = {
-            "{$addFields: { studentCount: { $size: '$students' } } }",
-            "{$group: {_id: '$creatōionDate', studentCount: { $sum: '$studentCount' }}}",
-            "{$sort: { _id: 1 }}"
-    })
-    public List<ChartData> groupByCreationDate();
 }

@@ -10,7 +10,8 @@ export interface Marks {
   marks: number;
 }
 
-export interface ChartData {
+export interface IChartData {
   id: string;
   studentCount: number;
+  creationDate: string
 }

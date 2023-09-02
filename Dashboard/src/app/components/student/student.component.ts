@@ -4,6 +4,7 @@ import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { Student } from './student.interface';
 import { StudentService } from 'src/app/services/student.service';
 import { ActivatedRoute } from '@angular/router';
+import { WebSocketService } from 'src/app/services/web-socket.service';
 
 @Component({
   selector: 'app-student',
@@ -27,13 +28,27 @@ export class StudentComponent implements OnInit {
     ],
   };
 
-  constructor(private studentService: StudentService, private route: ActivatedRoute, private cd: ChangeDetectorRef) { }
+  constructor(private studentService: StudentService, private route: ActivatedRoute, private cd: ChangeDetectorRef,
+    private webSocketService: WebSocketService) { }
 
   ngOnInit(): void {
     this.showMarks();
-    setInterval(() => {
-      this.showMarks();
-    }, 5000);
+
+    this.webSocketService.subscribe('/topic/chart-data', (data: any) => {
+      data = JSON.parse(data.body)
+  
+      const labels = this.barChartData.labels
+      labels?.push(this.formatDateTime(data.creationDate))
+      const da = this.barChartData.datasets[0].data
+      da.push(data.studentCount);
+
+      const updatedChartData: ChartData<'bar'> = {
+        labels: labels,
+        datasets: [{ data: da, label: 'Students' }]
+      };
+
+      this.barChartData = updatedChartData
+    })
   }
 
   showMarks(): void {
@@ -42,16 +57,7 @@ export class StudentComponent implements OnInit {
       const data: number[] = [];
 
       for (const d of chartData) {
-        const da = new Date(d.id)
-        console.log(d.id);
-
-        const parts = d.id.split(" ");
-        const month = parts[1];
-        const day = parseInt(parts[2]);
-        const time = parts[3];
-        const year = parseInt(parts[5]);
-
-        labels.push(`${time}\n${year}-${month}-${day}`);
+        labels.push(this.formatDateTime(d.creationDate));
         data.push(d.studentCount);
       }
 
@@ -64,6 +70,14 @@ export class StudentComponent implements OnInit {
     });
   }
 
+  formatDateTime(d: string) {    
+    const timestamp: Date = new Date(d);
+
+    const date: string = timestamp.toISOString().split("T")[0];
+    const time: string = timestamp.toTimeString().split(" ")[0];
+
+    return `${date} ${time}`
+  }
 
 
 }

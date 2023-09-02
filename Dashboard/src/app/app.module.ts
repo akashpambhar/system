@@ -7,6 +7,7 @@ import { NgChartsModule } from 'ng2-charts';
 import { HomeComponent } from './components/home/home.component';
 import { StudentComponent } from './components/student/student.component';
 import { HttpClientModule } from '@angular/common/http';
+import { WebSocketService } from './services/web-socket.service';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,9 @@ import { HttpClientModule } from '@angular/common/http';
     NgChartsModule,
     HttpClientModule
   ],
-  providers: [],
+  providers: [
+    WebSocketService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

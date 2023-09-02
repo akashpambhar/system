@@ -1,5 +1,7 @@
 package com.datacollectorservice.model;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +19,9 @@ public class Student {
     @Id
     private String id;
 
+    @NotBlank(message = "Student name cannot be empty")
     private String studentName;
 
+    @Valid
     private List<Marks> marks;
 }
