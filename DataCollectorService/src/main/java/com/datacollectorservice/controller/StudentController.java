@@ -9,8 +9,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,16 +42,7 @@ public class StudentController {
     }
 
     @PostMapping("/marks/json")
-    public ChartData receiveJsonMarks(@Valid @RequestBody School school, BindingResult bindingResult) throws CustomException {
-        if (bindingResult.hasErrors()) {
-            StringBuilder errorMessage = new StringBuilder();
-            for (FieldError error : bindingResult.getFieldErrors()) {
-                errorMessage.append(error.getDefaultMessage()).append(";\n");
-            }
-
-            throw new CustomException(errorMessage.toString());
-        }
-
+    public ChartData receiveJsonMarks(@Valid @RequestBody School school) {
         ChartData chartdata = studentService.processJsonMarks(school);
         simpMessagingTemplate.convertAndSend("/topic/chart-data", chartdata);
         return chartdata;
