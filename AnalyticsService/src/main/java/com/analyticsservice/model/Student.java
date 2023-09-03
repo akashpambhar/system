@@ -1,4 +1,4 @@
-package com.datacollectorservice.model;
+package com.analyticsservice.model;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
