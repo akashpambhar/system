@@ -1,4 +1,4 @@
-package com.analyticsservice.model;
+package com.datacollectorservice.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

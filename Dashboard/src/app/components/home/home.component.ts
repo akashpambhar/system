@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Student } from '../student/student.interface';
 import { StudentService } from 'src/app/services/student.service';
+import { AuthService } from 'src/app/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -9,14 +11,33 @@ import { StudentService } from 'src/app/services/student.service';
 })
 export class HomeComponent implements OnInit {
 
-  students: Student[] = [];
+  formData = {
+    username: '',
+    password: ''
+  };
 
-  constructor(private studentService: StudentService) { }
+
+  constructor(private authService: AuthService,
+    private router: Router) { }
 
   ngOnInit(): void {
-    this.studentService.getAllStudents().subscribe(data => {
-      this.students = data;
-    });
+
+  }
+
+  login() {
+    this.authService.login(this.formData.username, this.formData.password)
+      .subscribe(
+        response => {
+          if (this.authService.getRole() === "ROLE_ADMIN") {
+            this.router.navigate(['/student']);
+          } else if (this.authService.getRole() === "ROLE_TEACHER") {
+            this.router.navigate(['/average']);
+          }
+        },
+        error => {
+          console.error('Login failed:', error);
+        }
+      );
   }
 
 }

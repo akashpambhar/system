@@ -15,3 +15,10 @@ export interface IChartData {
   studentCount: number;
   creationDate: string
 }
+
+export interface SchoolAverage {
+  id: string;
+  schoolName: string;
+  schoolAverage: number;
+  subjectAverage: { [key: string]: number };
+}

@@ -28,7 +28,9 @@ export class StudentComponent implements OnInit {
     ],
   };
 
-  constructor(private studentService: StudentService, private route: ActivatedRoute, private cd: ChangeDetectorRef,
+  selectedFile: File | null = null;
+
+  constructor(private studentService: StudentService,
     private webSocketService: WebSocketService) { }
 
   ngOnInit(): void {
@@ -36,7 +38,7 @@ export class StudentComponent implements OnInit {
 
     this.webSocketService.subscribe('/topic/chart-data', (data: any) => {
       data = JSON.parse(data.body)
-  
+
       const labels = this.barChartData.labels
       labels?.push(this.formatDateTime(data.creationDate))
       const da = this.barChartData.datasets[0].data
@@ -70,7 +72,7 @@ export class StudentComponent implements OnInit {
     });
   }
 
-  formatDateTime(d: string) {    
+  formatDateTime(d: string) {
     const timestamp: Date = new Date(d);
 
     const date: string = timestamp.toISOString().split("T")[0];
@@ -79,5 +81,25 @@ export class StudentComponent implements OnInit {
     return `${date} ${time}`
   }
 
+  selectFile(event: any) {
+    this.selectedFile = event.target.files.item(0);
+  }
 
+  onSubmit() {
+    if (!this.selectedFile) {
+      alert('Please select a file to upload.');
+      return;
+    }
+
+    this.studentService.uploadFile(this.selectedFile)
+      .subscribe(
+        (response) => {
+          console.log('File upload successful:', response);
+        },
+        (error) => {
+          console.error('File upload failed:', error);
+        }
+      );
+  }
 }
+

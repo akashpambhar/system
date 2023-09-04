@@ -78,7 +78,8 @@ public class KafkaStreamsProcessor {
 
             SchoolAverage schoolAverage = new SchoolAverage();
             schoolAverage.setSchoolName(school.getSchoolName());
-            schoolAverage.setAverage(totalAverage / students.size());
+            schoolAverage.setSubjectAverage(subjectMarks);
+            schoolAverage.setSchoolAverage(totalAverage / students.size());
             schoolAverageRepository.save(schoolAverage);
             kafkaTemplate.send("school_average_marks", schoolAverage);
         } catch (Exception e) {

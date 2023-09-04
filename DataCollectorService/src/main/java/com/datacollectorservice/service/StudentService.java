@@ -4,8 +4,10 @@ import com.datacollectorservice.dto.ChartData;
 import com.datacollectorservice.exception.CustomException;
 import com.datacollectorservice.model.Marks;
 import com.datacollectorservice.model.School;
+import com.datacollectorservice.model.SchoolAverage;
 import com.datacollectorservice.model.Student;
 import com.datacollectorservice.repository.ChartRepository;
+import com.datacollectorservice.repository.SchoolAverageRepository;
 import com.datacollectorservice.repository.SchoolRepository;
 import com.datacollectorservice.repository.StudentRepository;
 import com.opencsv.CSVReader;
@@ -40,7 +42,10 @@ public class StudentService {
     private ChartRepository chartRepository;
 
     @Autowired
-    private KafkaTemplate<String, School> kafkaTemplate;
+    private SchoolAverageRepository schoolAverageRepository;
+
+    @Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
 
     public ChartData processJsonMarks(School school) {
         studentRepository.saveAll(school.getStudents());
@@ -122,6 +127,10 @@ public class StudentService {
 
     public List<ChartData> getChartData() {
         return chartRepository.findAll();
+    }
+
+    public List<SchoolAverage> getSchoolAverages(){
+        return schoolAverageRepository.findAll();
     }
 
     private ChartData saveToChartData(School school) {
