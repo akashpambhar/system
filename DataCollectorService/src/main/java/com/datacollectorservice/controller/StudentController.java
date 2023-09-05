@@ -6,6 +6,7 @@ import com.datacollectorservice.model.School;
 import com.datacollectorservice.model.SchoolAverage;
 import com.datacollectorservice.model.Student;
 import com.datacollectorservice.service.StudentService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import java.util.Optional;
 @CrossOrigin
 @RestController
 @RequestMapping("/api")
+@SecurityRequirement(name = "swaggerauth")
 public class StudentController {
 
     @Autowired
@@ -70,7 +72,7 @@ public class StudentController {
 
     @GetMapping("/average")
     @PreAuthorize("hasRole('TEACHER')")
-    public List<SchoolAverage> getSchoolAverages(){
+    public List<SchoolAverage> getSchoolAverages() {
         return studentService.getSchoolAverages();
     }
 }

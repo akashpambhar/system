@@ -1,16 +1,19 @@
 <div class="container mt-5 mb-3">
   <div class="row justify-content-center">
-    <h1 style="text-align: center;" class="mb-3">Student data</h1>
+    <h1 style="text-align: center" class="mb-3">Student data</h1>
     <div class="col-md-6">
       <div class="card">
-        <div class="card-header">
-          Upload csv file containing student marks
-        </div>
+        <div class="card-header">Upload csv file containing student marks</div>
         <div class="card-body">
           <form (submit)="onSubmit()" enctype="multipart/form-data">
             <div class="mb-3">
               <label for="file" class="form-label">Choose File</label>
-              <input type="file" class="form-control" (change)="selectFile($event)" required>
+              <input
+                type="file"
+                class="form-control"
+                (change)="selectFile($event)"
+                required
+              />
             </div>
             <button type="submit" class="btn btn-primary">Upload File</button>
           </form>
@@ -20,7 +23,7 @@
   </div>
 </div>
 <div class="container m-auto">
-  <div  class="m-auto" style="display: block; width: 700px; height: 700px">
+  <div class="m-auto" style="display: block; width: 700px; height: 700px">
     <canvas
       baseChart
       class="chart"

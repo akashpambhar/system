@@ -1,9 +1,8 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { Student } from './student.interface';
 import { StudentService } from 'src/app/services/student.service';
-import { ActivatedRoute } from '@angular/router';
 import { WebSocketService } from 'src/app/services/web-socket.service';
 
 @Component({

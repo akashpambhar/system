@@ -30,12 +30,6 @@ public class JwtUtils {
     private String jwtCookie;
 
     public String getJwtFromCookies(HttpServletRequest request) {
-//        Cookie cookie = WebUtils.getCookie(request, jwtCookie);
-//        if (cookie != null) {
-//            return cookie.getValue();
-//        } else {
-//            return null;
-//        }
         String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             // Extract and return the JWT token without the "Bearer " prefix
@@ -47,7 +41,6 @@ public class JwtUtils {
 
     public String generateJwtCookie(UserDetailsImpl userPrincipal) {
         return generateTokenFromUsername(userPrincipal.getUsername(), userPrincipal.getAuthorities());
-//        return ResponseCookie.from(jwtCookie, jwt).maxAge(24 * 60 * 60).build();
     }
 
     public ResponseCookie getCleanJwtCookie() {

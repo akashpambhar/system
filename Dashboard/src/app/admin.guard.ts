@@ -10,15 +10,15 @@ export class AdminGuard implements CanActivate {
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-      const userRole = this.authService.getRole();
+    const userRole = this.authService.getRole();
 
-      if (userRole === 'ROLE_ADMIN') {
-        return true;
-      } else {
-        this.router.navigate(['/']);
-        return false;
-      }
+    if (userRole === 'ROLE_ADMIN') {
+      return true;
+    } else {
+      this.router.navigate(['/']);
+      return false;
+    }
   }
-  
-  constructor(private authService:AuthService, private router: Router){}
+
+  constructor(private authService: AuthService, private router: Router) { }
 }

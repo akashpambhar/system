@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { IChartData, Student } from '../components/student/student.interface';
 
@@ -28,15 +28,10 @@ export class StudentService {
     return this.http.get<IChartData[]>(`${this.apiUrl}/chart`);
   }
 
-  uploadFile(file:any): Observable<any> {
+  uploadFile(file: any): Observable<any> {
     const formData = new FormData();
-    // file = file.replace("C:\\fakepath\\", "");
-    // formData.append('file', file);
 
-    formData.append( 'file', new Blob([file]), file.name);
-    console.log(`file ${file}`);
-    console.log(`formData ${formData.get('file')}`);
-    
+    formData.append('file', new Blob([file]), file.name);
 
     return this.http.post(`${this.apiUrl}/marks/csv`, formData);
   }

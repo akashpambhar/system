@@ -2,20 +2,32 @@
   <div class="row justify-content-center">
     <div class="col-md-6">
       <div class="card">
-        <div class="card-header">
-          Login
-        </div>
+        <div class="card-header">Login</div>
         <div class="card-body">
           <form>
             <div class="mb-3">
               <label for="username" class="form-label">Username</label>
-              <input type="text" class="form-control" id="username" name="username" [(ngModel)]="formData.username">
+              <input
+                type="text"
+                class="form-control"
+                id="username"
+                name="username"
+                [(ngModel)]="formData.username"
+              />
             </div>
             <div class="mb-3">
               <label for="password" class="form-label">Password</label>
-              <input type="password" class="form-control" id="password" name="password" [(ngModel)]="formData.password">
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                name="password"
+                [(ngModel)]="formData.password"
+              />
             </div>
-            <button type="submit" class="btn btn-primary" (click)="login()">Login</button>
+            <button type="submit" class="btn btn-primary" (click)="login()">
+              Login
+            </button>
           </form>
         </div>
       </div>

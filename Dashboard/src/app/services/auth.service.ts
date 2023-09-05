@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
@@ -47,8 +47,7 @@ export class AuthService {
   getRole(): string {
     const token = this.getToken();
     if (token) {
-      const decodedToken:any = jwt_decode(token);
-      console.log(decodedToken.roles[0].authority);
+      const decodedToken: any = jwt_decode(token);
 
       return decodedToken?.roles[0].authority;
     }
