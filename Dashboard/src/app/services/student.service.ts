@@ -27,4 +27,12 @@ export class StudentService {
   getChartData(): Observable<IChartData[]> {
     return this.http.get<IChartData[]>(`${this.apiUrl}/chart`);
   }
+
+  uploadFile(file: any): Observable<any> {
+    const formData = new FormData();
+
+    formData.append('file', new Blob([file]), file.name);
+
+    return this.http.post(`${this.apiUrl}/marks/csv`, formData);
+  }
 }

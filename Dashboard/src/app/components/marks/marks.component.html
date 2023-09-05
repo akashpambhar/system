@@ -1,0 +1,24 @@
+<div class="container mt-5">
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>School Name</th>
+        <th>School Average</th>
+        <th
+          *ngFor="let subject of schoolAverages[0]?.subjectAverage | keyvalue"
+        >
+          {{ subject.key }}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let school of schoolAverages">
+        <td>{{ school.schoolName }}</td>
+        <td>{{ school.schoolAverage }}</td>
+        <td *ngFor="let subject of school.subjectAverage | keyvalue">
+          {{ subject.value }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

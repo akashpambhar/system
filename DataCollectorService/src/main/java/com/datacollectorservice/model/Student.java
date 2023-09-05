@@ -2,6 +2,7 @@ package com.datacollectorservice.model;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,5 +24,6 @@ public class Student {
     private String studentName;
 
     @Valid
+    @Size(min = 5, message = "There must be 5 subjects")
     private List<Marks> marks;
 }

@@ -23,6 +23,7 @@
 
 	<modules>
 		<module>DataCollectorService</module>
+		<module>AnalyticsService</module>
 	</modules>
 
 	<build>

@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { WebSocketSubject, webSocket } from 'rxjs/webSocket';
 import * as SockJS from 'sockjs-client';
 import * as Stomp from 'stompjs';
 
