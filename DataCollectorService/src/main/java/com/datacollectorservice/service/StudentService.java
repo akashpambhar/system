@@ -67,10 +67,10 @@ public class StudentService {
 
             while ((line = reader.readNext()) != null) {
                 school.setSchoolName(line[0]);
-                school.setClassName(line[1]);
 
                 Student student = new Student();
                 student.setStudentName(line[2]);
+                student.setClassName(line[1]);
 
                 List<Marks> marksList = new ArrayList<>();
                 for (int i = 3; i < line.length - 1; i += 2) {
@@ -129,11 +129,11 @@ public class StudentService {
         return chartRepository.findAll();
     }
 
-    public List<SchoolAverage> getSchoolAverages(){
+    public List<SchoolAverage> getSchoolAverages() {
         return schoolAverageRepository.findAll();
     }
 
-    private ChartData saveToChartData(School school) {
+    public ChartData saveToChartData(School school) {
         ChartData chartData = new ChartData();
         chartData.setStudentCount(school.getStudents().size());
         return chartRepository.save(chartData);

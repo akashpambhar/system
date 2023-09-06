@@ -2,6 +2,9 @@ package com.analyticsservice.service;
 
 import com.analyticsservice.model.*;
 import com.analyticsservice.repository.SchoolAverageRepository;
+import com.analyticsservice.repository.SchoolReportRepository;
+import com.analyticsservice.repository.StudentReportRepository;
+import com.analyticsservice.repository.TopperRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +12,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class KafkaStreamsProcessor {
@@ -20,6 +21,15 @@ public class KafkaStreamsProcessor {
 
     @Autowired
     private SchoolAverageRepository schoolAverageRepository;
+
+    @Autowired
+    private SchoolReportRepository schoolReportRepository;
+
+    @Autowired
+    private StudentReportRepository studentReportRepository;
+
+    @Autowired
+    private TopperRepository topperRepository;
 
     @Autowired
     private KafkaTemplate<String, Object> kafkaTemplate;
@@ -47,6 +57,39 @@ public class KafkaStreamsProcessor {
     }
 
     @KafkaListener(
+            topics = "topic_class_wise_topper",
+            groupId = "topic_class_wise_topper_consumer",
+            properties = {
+                    "spring.json.type.mapping:ClassWiseTopperTopic:com.analyticsservice.model.ClassWiseTopperTopic"
+            }
+    )
+    public void listenClassWiseTopperTopic(ClassWiseTopperTopic classWiseTopperTopic) {
+        logger.info(classWiseTopperTopic.toString());
+    }
+
+    @KafkaListener(
+            topics = "topic_school_topper",
+            groupId = "topic_school_topper_consumer",
+            properties = {
+                    "spring.json.type.mapping:TopperOfSchoolTopic:com.analyticsservice.model.TopperOfSchoolTopic"
+            }
+    )
+    public void listenSchoolTopperTopic(TopperOfSchoolTopic topperOfSchoolTopic) {
+        logger.info(topperOfSchoolTopic.toString());
+    }
+
+    @KafkaListener(
+            topics = "topic_topper_among_school",
+            groupId = "topic_topper_among_school_consumer",
+            properties = {
+                    "spring.json.type.mapping:Topper:com.analyticsservice.model.Topper"
+            }
+    )
+    public void listenTopperAmongSchool(Topper topper) {
+        logger.info(topper.toString());
+    }
+
+    @KafkaListener(
             topics = "student_marks",
             groupId = "student-marks-consumer",
             properties = {
@@ -54,13 +97,24 @@ public class KafkaStreamsProcessor {
             }
     )
     public void calculateAverage(School school) {
-
         List<Student> students = school.getStudents();
         Map<String, Double> subjectWiseAverage = new HashMap<>();
         double totalAverage = 0;
 
+        List<StudentReport> studentReports = new ArrayList<>();
+        double studentAverage = 0;
+
+        Map<String, String> classWiseTopper = new HashMap<>();
+        Map<String, Double> maxStudentAverageClassWise = new HashMap<>();
+
+        double marksOfTopper = -1;
+        String topperOfSchool = "";
+
         // loop through data and calculate averages
         for (Student student : students) {
+
+            StudentReport studentReport = mapToStudentReport(student);
+
             double studentTotalMarks = 0;
             List<Marks> marks = student.getMarks();
             for (Marks mark : marks) {
@@ -74,8 +128,43 @@ public class KafkaStreamsProcessor {
                     subjectWiseAverage.put(subjectName, subjectMark);
             }
 
-            totalAverage += (studentTotalMarks / marks.size());
+            studentAverage = studentTotalMarks / marks.size();
+
+            if (studentAverage > marksOfTopper) {
+                topperOfSchool = student.getStudentName();
+                marksOfTopper = studentAverage;
+            }
+
+            if (classWiseTopper.get(student.getClassName()) != null) {
+
+                if (maxStudentAverageClassWise.get(student.getClassName()) != null) {
+                    double maxStudentAverage = maxStudentAverageClassWise.get(student.getClassName());
+
+                    if (studentAverage > maxStudentAverage) {
+                        classWiseTopper.put(student.getClassName(), student.getStudentName());
+                        maxStudentAverageClassWise.put(student.getClassName(), studentAverage);
+                    }
+                }
+            } else {
+                classWiseTopper.put(student.getClassName(), student.getStudentName());
+                maxStudentAverageClassWise.put(student.getClassName(), studentAverage);
+            }
+
+            studentReport.setStudentAverage(studentAverage);
+
+            studentReports.add(studentReport);
+
+            totalAverage += studentAverage;
         }
+
+        // send class wise topper to kafka topic
+        sendClassWiseTopperToKafka(school.getSchoolName(), classWiseTopper);
+
+        // send topper of the school to kafka topic
+        sendSchoolTopperToKafka(school.getSchoolName(), topperOfSchool);
+
+        // save and send, topper among the school to database and kafka topic
+        saveAndSendTopperAmongSchoolToKafka(school.getSchoolName(), topperOfSchool, marksOfTopper);
 
         totalAverage /= students.size();
 
@@ -88,6 +177,9 @@ public class KafkaStreamsProcessor {
 
         // save to database
         saveSchoolAverageToDatabase(school, subjectWiseAverage, totalAverage);
+
+        //save to database
+        saveStudentReport(school, studentReports);
 
         // send to kafka topic, topic_average_marks
         sendSubjectWiseAverageToKafkaTopic(school.getSchoolName(), subjectWiseAverage);
@@ -121,4 +213,40 @@ public class KafkaStreamsProcessor {
         subjectAverageTopic.setSubjectAverage(subjectWiseAverage);
         kafkaTemplate.send("topic_average_marks", subjectAverageTopic);
     }
+
+    private void saveStudentReport(School school, List<StudentReport> studentReports) {
+        studentReportRepository.saveAll(studentReports);
+        SchoolReport schoolReport = new SchoolReport();
+        schoolReport.setSchoolName(school.getSchoolName());
+        schoolReport.setStudentReports(studentReports);
+        schoolReportRepository.save(schoolReport);
+    }
+
+    private StudentReport mapToStudentReport(Student student) {
+        StudentReport studentReport = new StudentReport();
+        studentReport.setStudentName(student.getStudentName());
+        studentReport.setClassName(student.getClassName());
+        return studentReport;
+    }
+
+    private void sendClassWiseTopperToKafka(String schoolName, Map<String, String> classWiseTopper) {
+        kafkaTemplate.send("topic_class_wise_topper", new ClassWiseTopperTopic(schoolName, classWiseTopper));
+    }
+
+    private void sendSchoolTopperToKafka(String schoolName, String studentName) {
+        kafkaTemplate.send("topic_school_topper", new TopperOfSchoolTopic(schoolName, studentName));
+    }
+
+    private void saveAndSendTopperAmongSchoolToKafka(String schoolName, String studentName, double studentAverage) {
+        Topper topper = new Topper();
+        topper.setSchoolName(schoolName);
+        topper.setStudentName(studentName);
+        topper.setStudentAverageMarks(studentAverage);
+        topperRepository.save(topper);
+
+        Optional<Topper> topperAmongSchool = topperRepository.findFirstTopperByOrderByStudentAverageMarksDesc();
+
+        kafkaTemplate.send("topic_topper_among_school", topperAmongSchool.get());
+    }
 }
+

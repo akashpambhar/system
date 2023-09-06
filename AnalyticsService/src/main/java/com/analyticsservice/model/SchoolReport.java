@@ -17,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 @Document
-public class School {
+public class SchoolReport {
 
     @Id
     private String id;
@@ -27,8 +27,9 @@ public class School {
 
     @DBRef
     @Valid
-    private List<Student> students;
+    private List<StudentReport> studentReports;
 
     @CreatedDate
     private LocalDateTime creationDate;
 }
+

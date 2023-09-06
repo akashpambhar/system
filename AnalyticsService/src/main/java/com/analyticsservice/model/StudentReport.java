@@ -1,21 +1,17 @@
-package com.datacollectorservice.model;
+package com.analyticsservice.model;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.List;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Document
-public class Student {
+public class StudentReport {
 
     @Id
     private String id;
@@ -25,7 +21,6 @@ public class Student {
 
     private String className;
 
-    @Valid
-    @Size(min = 5, message = "There must be 5 subjects")
-    private List<Marks> marks;
+    private double studentAverage;
 }
+

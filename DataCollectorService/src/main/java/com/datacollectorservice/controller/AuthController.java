@@ -10,7 +10,6 @@ import com.datacollectorservice.repository.UserRepository;
 import com.datacollectorservice.security.jwt.JwtUtils;
 import com.datacollectorservice.security.service.UserDetailsImpl;
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +26,8 @@ import java.util.Set;
 @CrossOrigin
 @RestController
 @RequestMapping("/api/auth")
-@Slf4j
 public class AuthController {
+
     @Autowired
     AuthenticationManager authenticationManager;
 
@@ -60,8 +59,6 @@ public class AuthController {
 
     @PostMapping(value = "/signup")
     public ResponseEntity<String> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-
-        log.info(signUpRequest.toString());
 
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity

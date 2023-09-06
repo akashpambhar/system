@@ -2,7 +2,6 @@ package com.datacollectorservice.security.service;
 
 import com.datacollectorservice.model.security.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,7 +11,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@Slf4j
 public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUIDLONG = 1L;
 

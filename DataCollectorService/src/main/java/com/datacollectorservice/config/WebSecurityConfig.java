@@ -1,6 +1,5 @@
 package com.datacollectorservice.config;
 
-import com.datacollectorservice.security.jwt.AuthEntryPointJwt;
 import com.datacollectorservice.security.jwt.AuthTokenFilter;
 import com.datacollectorservice.security.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +24,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
-
-    @Autowired
-    private AuthEntryPointJwt unauthorizedHandler;
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
