@@ -12,6 +12,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
@@ -43,6 +44,18 @@ public class KafkaStreamsProcessor {
     )
     public void listenSchoolAverage(SchoolAverageTopic schoolAverageTopic) {
         logger.info(schoolAverageTopic.toString());
+    }
+
+    @KafkaListener(
+            topics = "topic_best_improvement_school",
+            groupId = "topic_best_improvement_school_consumer",
+            properties = {
+                    "spring.json.type.mapping:SchoolAverage:com.analyticsservice.model.SchoolAverage"
+            }
+    )
+    public void listenBestImprovementSchool(SchoolAverage schoolAverage) {
+        logger.info("School with best improvement : ");
+        logger.info(schoolAverage.toString());
     }
 
     @KafkaListener(
@@ -187,8 +200,7 @@ public class KafkaStreamsProcessor {
         // send to kafka topic, school_average_marks
         sendSchoolAverageToKafkaTopic(school.getSchoolName(), totalAverage);
 
-        List<SchoolAverage> schoolAverages = schoolAverageRepository.findSchoolAveragesByOrderByCreationDateDescSchoolNameAscSchoolAverageDesc();
-        logger.info(schoolAverages.toString());
+        findSchoolWithBestImprovement();
     }
 
     public void saveSchoolAverageToDatabase(School school, Map<String, Double> subjectWiseAverage, Double totalAverage) {
@@ -196,6 +208,7 @@ public class KafkaStreamsProcessor {
         schoolAverage.setSchoolName(school.getSchoolName());
         schoolAverage.setSubjectAverage(subjectWiseAverage);
         schoolAverage.setSchoolAverage(totalAverage);
+        schoolAverage.setCreationDate(LocalDateTime.now());
         schoolAverageRepository.save(schoolAverage);
     }
 
@@ -252,8 +265,50 @@ public class KafkaStreamsProcessor {
         kafkaTemplate.send("topic_topper_among_school", topperAmongSchool.get());
     }
 
-    public void findSchoolWithBestImprovement(List<SchoolAverage> schoolAverages){
+    private void findSchoolWithBestImprovement() {
+        List<SchoolAverage> schoolAverages = schoolAverageRepository.findSchoolAveragesByOrderByCreationDateDescSchoolNameAscSchoolAverageDesc();
+        logger.info(schoolAverages.toString());
+        SchoolAverage answer = new SchoolAverage();
+        boolean isDistinct = true;
+        double maxGap = -1000;
+        boolean isChecked = false;
 
+        for (int i = 1; i < schoolAverages.size(); i++) {
+            SchoolAverage previousSchoolAverage = schoolAverages.get(i - 1);
+            SchoolAverage currentSchoolAverage = schoolAverages.get(i);
+
+            if (previousSchoolAverage.getSchoolName().equals(currentSchoolAverage.getSchoolName())) {
+                isDistinct = false;
+                if (isChecked == false) {
+                    isChecked = true;
+                    double currentGap = previousSchoolAverage.getSchoolAverage() - currentSchoolAverage.getSchoolAverage();
+
+                    if (currentGap > maxGap) {
+                        answer = previousSchoolAverage;
+                        maxGap = currentGap;
+                    }
+                }
+            } else
+                isChecked = false;
+        }
+
+        if (answer.getSchoolName().isBlank()) {
+            if (isDistinct) {
+                answer = findSchoolWithMaxSchoolAverage(schoolAverages).get();
+            } else {
+                answer = schoolAverages.get(0);
+            }
+        }
+
+        sendBestSchoolByImprovement(answer);
+    }
+
+    private Optional<SchoolAverage> findSchoolWithMaxSchoolAverage(List<SchoolAverage> schoolAverages) {
+        return schoolAverages.stream().max(Comparator.comparingDouble(SchoolAverage::getSchoolAverage));
+    }
+
+    private void sendBestSchoolByImprovement(SchoolAverage schoolAverage) {
+        kafkaTemplate.send("topic_best_improvement_school", schoolAverage);
     }
 }
 
