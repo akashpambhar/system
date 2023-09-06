@@ -186,6 +186,9 @@ public class KafkaStreamsProcessor {
 
         // send to kafka topic, school_average_marks
         sendSchoolAverageToKafkaTopic(school.getSchoolName(), totalAverage);
+
+        List<SchoolAverage> schoolAverages = schoolAverageRepository.findSchoolAveragesByOrderByCreationDateDescSchoolNameAscSchoolAverageDesc();
+        logger.info(schoolAverages.toString());
     }
 
     public void saveSchoolAverageToDatabase(School school, Map<String, Double> subjectWiseAverage, Double totalAverage) {
@@ -248,5 +251,53 @@ public class KafkaStreamsProcessor {
 
         kafkaTemplate.send("topic_topper_among_school", topperAmongSchool.get());
     }
+
+    public void findSchoolWithBestImprovement(List<SchoolAverage> schoolAverages){
+
+    }
 }
+
+/*
+case 1
+
+school 1, 78
+
+case 2
+
+school 1, 78
+school 2, 90
+
+case 3
+
+school 1, 78
+school 1, 70
+school 2, 95
+school 2, 90
+
+case 4
+
+school 1, 78
+school 1, 90
+
+first = firstRecord
+ans = null
+isDistinct = true
+maxGap = negativeMax
+
+loop
+if present == previous
+    isDistinct = false
+    if gap max, subtraction, prev, pres
+        if current gap > maxGap
+            maxGap = subtraction
+            ans = school name
+
+if ans is null
+    if Distinct true
+        loop
+    else
+	    then print first
+
+
+ */
 
