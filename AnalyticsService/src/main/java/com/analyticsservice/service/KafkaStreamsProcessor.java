@@ -111,6 +111,8 @@ public class KafkaStreamsProcessor {
     )
     public void calculateAverage(School school) {
         List<Student> students = school.getStudents();
+        logger.info("Here :: ");
+        logger.info(school.toString());
         Map<String, Double> subjectWiseAverage = new HashMap<>();
         double totalAverage = 0;
 
@@ -200,7 +202,7 @@ public class KafkaStreamsProcessor {
         // send to kafka topic, school_average_marks
         sendSchoolAverageToKafkaTopic(school.getSchoolName(), totalAverage);
 
-        findSchoolWithBestImprovement();
+        findSchoolWithBestImprovement(schoolAverageRepository.findSchoolAveragesByOrderByCreationDateDescSchoolNameAscSchoolAverageDesc());
     }
 
     public void saveSchoolAverageToDatabase(School school, Map<String, Double> subjectWiseAverage, Double totalAverage) {
@@ -265,9 +267,8 @@ public class KafkaStreamsProcessor {
         kafkaTemplate.send("topic_topper_among_school", topperAmongSchool.get());
     }
 
-    private void findSchoolWithBestImprovement() {
-        List<SchoolAverage> schoolAverages = schoolAverageRepository.findSchoolAveragesByOrderByCreationDateDescSchoolNameAscSchoolAverageDesc();
-        logger.info(schoolAverages.toString());
+    public void findSchoolWithBestImprovement(List<SchoolAverage> schoolAverageList) {
+        List<SchoolAverage> schoolAverages = schoolAverageList;
         SchoolAverage answer = new SchoolAverage();
         boolean isDistinct = true;
         double maxGap = -1000;
@@ -292,7 +293,7 @@ public class KafkaStreamsProcessor {
                 isChecked = false;
         }
 
-        if (answer.getSchoolName().isBlank()) {
+        if (answer.getSchoolName() != null && answer.getSchoolName().isEmpty()) {
             if (isDistinct) {
                 answer = findSchoolWithMaxSchoolAverage(schoolAverages).get();
             } else {
@@ -311,48 +312,3 @@ public class KafkaStreamsProcessor {
         kafkaTemplate.send("topic_best_improvement_school", schoolAverage);
     }
 }
-
-/*
-case 1
-
-school 1, 78
-
-case 2
-
-school 1, 78
-school 2, 90
-
-case 3
-
-school 1, 78
-school 1, 70
-school 2, 95
-school 2, 90
-
-case 4
-
-school 1, 78
-school 1, 90
-
-first = firstRecord
-ans = null
-isDistinct = true
-maxGap = negativeMax
-
-loop
-if present == previous
-    isDistinct = false
-    if gap max, subtraction, prev, pres
-        if current gap > maxGap
-            maxGap = subtraction
-            ans = school name
-
-if ans is null
-    if Distinct true
-        loop
-    else
-	    then print first
-
-
- */
-
