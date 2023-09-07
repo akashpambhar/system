@@ -313,7 +313,9 @@ public class KafkaStreamsProcessor {
         kafkaTemplate.send("topic_best_improvement_school", schoolAverage);
     }
 
-    private double roundOffAverage(double average){
-        return Math.round(average);
+    private Double roundOffAverage(Double average){
+        if(average != null)
+            return Double.valueOf(Math.round(average.doubleValue()));
+        return null;
     }
 }
