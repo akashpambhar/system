@@ -2,8 +2,8 @@ package com.datacollectorservice.repository;
 
 import com.datacollectorservice.dto.ChartData;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
+@Repository
 public interface ChartRepository extends MongoRepository<ChartData, String> {
 }

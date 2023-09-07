@@ -28,7 +28,12 @@ public class KafkaConfig {
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         props.put(JsonSerializer.TYPE_MAPPINGS,
-                "SchoolAverage:com.analyticsservice.model.SchoolAverage, SubjectAverageTopic:com.analyticsservice.model.SubjectAverageTopic");
+                "SchoolAverage:com.analyticsservice.model.SchoolAverage,"
+                        + "SubjectAverageTopic:com.analyticsservice.model.SubjectAverageTopic,"
+                        + "ClassWiseTopperTopic:com.analyticsservice.model.ClassWiseTopperTopic,"
+                        + "TopperOfSchoolTopic:com.analyticsservice.model.TopperOfSchoolTopic,"
+                        + "Topper:com.analyticsservice.model.Topper"
+        );
         return new DefaultKafkaProducerFactory<>(props);
     }
 

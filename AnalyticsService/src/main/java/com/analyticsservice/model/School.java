@@ -25,8 +25,6 @@ public class School {
     @NotBlank(message = "School name cannot be empty")
     private String schoolName;
 
-    private String className;
-
     @DBRef
     @Valid
     private List<Student> students;

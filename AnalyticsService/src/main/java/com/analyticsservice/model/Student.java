@@ -23,6 +23,8 @@ public class Student {
     @NotBlank(message = "Student name cannot be empty")
     private String studentName;
 
+    private String className;
+
     @Valid
     @Size(min = 5, message = "There must be 5 subjects")
     private List<Marks> marks;

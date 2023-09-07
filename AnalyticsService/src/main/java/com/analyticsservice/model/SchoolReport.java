@@ -1,30 +1,35 @@
 package com.analyticsservice.model;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
-import java.util.Map;
+import java.util.List;
 
-@Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Data
 @Document
-public class SchoolAverage {
+public class SchoolReport {
 
     @Id
-    String id;
+    private String id;
 
-    String schoolName;
+    @NotBlank(message = "School name cannot be empty")
+    private String schoolName;
 
-    Double schoolAverage;
-
-    Map<String, Double> subjectAverage;
+    @DBRef
+    @Valid
+    private List<StudentReport> studentReports;
 
     @CreatedDate
     private LocalDateTime creationDate;
 }
+
