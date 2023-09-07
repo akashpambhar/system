@@ -187,7 +187,7 @@ public class KafkaStreamsProcessor {
         for (Map.Entry<String, Double> entry : subjectWiseAverage.entrySet()) {
             String subjectName = entry.getKey();
             Double TotalMarks = entry.getValue();
-            subjectWiseAverage.put(subjectName, TotalMarks / students.size());
+            subjectWiseAverage.put(subjectName, roundOffAverage(TotalMarks / students.size()));
         }
 
         // save to database
@@ -209,7 +209,7 @@ public class KafkaStreamsProcessor {
         SchoolAverage schoolAverage = new SchoolAverage();
         schoolAverage.setSchoolName(school.getSchoolName());
         schoolAverage.setSubjectAverage(subjectWiseAverage);
-        schoolAverage.setSchoolAverage(totalAverage);
+        schoolAverage.setSchoolAverage(roundOffAverage(totalAverage));
         schoolAverage.setCreationDate(LocalDateTime.now());
         schoolAverageRepository.save(schoolAverage);
     }
@@ -218,7 +218,7 @@ public class KafkaStreamsProcessor {
         try {
             SchoolAverageTopic schoolAverage = new SchoolAverageTopic();
             schoolAverage.setSchoolName(schoolName);
-            schoolAverage.setSchoolAverage(totalAverage);
+            schoolAverage.setSchoolAverage(roundOffAverage(totalAverage));
             kafkaTemplate.send("school_average_marks", schoolAverage);
         } catch (Exception e) {
             logger.info(e.getMessage());
@@ -259,11 +259,11 @@ public class KafkaStreamsProcessor {
         Topper topper = new Topper();
         topper.setSchoolName(schoolName);
         topper.setStudentName(studentName);
-        topper.setStudentAverageMarks(studentAverage);
+        topper.setStudentAverageMarks(roundOffAverage(studentAverage));
         topperRepository.save(topper);
 
         Optional<Topper> topperAmongSchool = topperRepository.findFirstTopperByOrderByStudentAverageMarksDesc();
-
+        topperAmongSchool.get().setStudentAverageMarks(roundOffAverage(topperAmongSchool.get().getStudentAverageMarks()));
         kafkaTemplate.send("topic_topper_among_school", topperAmongSchool.get());
     }
 
@@ -309,6 +309,11 @@ public class KafkaStreamsProcessor {
     }
 
     private void sendBestSchoolByImprovement(SchoolAverage schoolAverage) {
+        schoolAverage.setSchoolAverage(roundOffAverage(schoolAverage.getSchoolAverage()));
         kafkaTemplate.send("topic_best_improvement_school", schoolAverage);
+    }
+
+    private double roundOffAverage(double average){
+        return Math.round(average);
     }
 }
