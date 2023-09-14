@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface StudentRepository extends MongoRepository<Student, String> {
 
-    List<Student> findByStudentName(String studentName);
+    List<Student> findByStudentNameIgnoreCase(String studentName);
 
     List<Student> findByClassNameIgnoreCase(String className);
 }

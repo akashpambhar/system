@@ -238,9 +238,6 @@ public class KafkaStreamsProcessor {
         kafkaTemplate.send("topic_average_marks", subjectAverageTopic);
     }
 
-    // class name => subject wise avg
-    // session => subj wise avg
-
     private void saveStudentReport(School school, List<StudentReport> studentReports) {
         studentReportRepository.saveAll(studentReports);
         SchoolReport schoolReport = new SchoolReport();

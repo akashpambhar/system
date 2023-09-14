@@ -81,6 +81,8 @@ public class StudentController {
     @GetMapping("/school/upload-data")
     @PreAuthorize("hasRole('ADMIN')")
     public List<UserReport> getUploadInformation(){
-        return studentService.getAllUserReport();
+        List<UserReport> userReports = studentService.getAllUserReport();
+        simpMessagingTemplate.convertAndSend("/topic/upload-data", userReports);
+        return userReports;
     }
 }

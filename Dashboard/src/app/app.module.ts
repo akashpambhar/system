@@ -12,6 +12,12 @@ import { FormsModule } from '@angular/forms';
 import { MarksComponent } from './components/marks/marks.component';
 import { SignupComponent } from './components/signup/signup.component';
 import { AuthInterceptor } from './auth.interceptor';
+import { StudentPerformanceClassnameComponent } from './components/student-performance-classname/student-performance-classname.component';
+import { ReportComponent } from './components/report/report.component';
+import { StudentPerformanceAllComponent } from './components/student-performance-all/student-performance-all.component';
+import { StudentPerformanceStudentnameComponent } from './components/student-performance-studentname/student-performance-studentname.component';
+import { SchoolPerformanceClassnameSubjectnameComponent } from './components/school-performance-classname-subjectname/school-performance-classname-subjectname.component';
+import { SchoolPerformanceClassnameComponent } from './components/school-performance-classname/school-performance-classname.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +25,13 @@ import { AuthInterceptor } from './auth.interceptor';
     HomeComponent,
     StudentComponent,
     MarksComponent,
-    SignupComponent
+    SignupComponent,
+    StudentPerformanceClassnameComponent,
+    ReportComponent,
+    StudentPerformanceAllComponent,
+    StudentPerformanceStudentnameComponent,
+    SchoolPerformanceClassnameSubjectnameComponent,
+    SchoolPerformanceClassnameComponent
   ],
   imports: [
     BrowserModule,

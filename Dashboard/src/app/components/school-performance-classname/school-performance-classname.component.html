@@ -1,0 +1,58 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 mx-auto">
+      <form (ngSubmit)="onSubmit()" class="mt-4">
+        <div class="form-group">
+          <label for="className">Class Name:</label>
+          <input
+            type="text"
+            id="className"
+            name="className"
+            [(ngModel)]="className"
+            class="form-control"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <h2>School Performance Report</h2>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>School Name</th>
+        <th>Class Name</th>
+        <th>Session</th>
+        <th>Creation Date</th>
+        <th>Subject Averages</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let school of response">
+        <td>{{ school.schoolName }}</td>
+        <td>{{ school.className }}</td>
+        <td>{{ school.session }}</td>
+        <td>{{ school.creationDate | date : "medium" }}</td>
+        <td>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Subject</th>
+                <th>Average Marks</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let subject of school.subjectAverage | keyvalue">
+                <td>{{ subject.key }}</td>
+                <td>{{ subject.value }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,58 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 mx-auto">
+      <form (ngSubmit)="onSubmit()" class="mt-4">
+        <div class="form-group">
+          <label for="className">Class Name:</label>
+          <input
+            type="text"
+            id="className"
+            name="className"
+            [(ngModel)]="className"
+            class="form-control"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <h2 style="text-align: center;">Student Performance Report</h2>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Student Name</th>
+        <th>School Name</th>
+        <th>Session</th>
+        <th>Class Name</th>
+        <th>Subjects</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let student of response">
+        <td>{{ student.studentName }}</td>
+        <td>{{ student.schoolName }}</td>
+        <td>{{ student.session }}</td>
+        <td>{{ student.className }}</td>
+        <td>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Subject Name</th>
+                <th>Marks</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let mark of student.marks">
+                <td>{{ mark.subjectName }}</td>
+                <td>{{ mark.marks }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

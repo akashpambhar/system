@@ -1,10 +1,10 @@
 package com.reportservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.reportservice.exception.CustomException;
 import com.reportservice.model.ReportRequest;
 import com.reportservice.model.Student;
 import com.reportservice.model.SubjectAverageTopic;
-import com.reportservice.repository.SchoolRepository;
 import com.reportservice.repository.StudentRepository;
 import com.reportservice.repository.SubjectAverageTopicRepository;
 import org.slf4j.Logger;
@@ -26,9 +26,6 @@ public class ReportService {
     Logger logger = LoggerFactory.getLogger(ReportService.class);
 
     @Autowired
-    private SchoolRepository schoolRepository;
-
-    @Autowired
     private StudentRepository studentRepository;
 
     @Autowired
@@ -45,21 +42,27 @@ public class ReportService {
         if (students.isEmpty()) {
             throw new CustomException("class name not found");
         }
-        kafkaTemplate.send("report_requests", new ReportRequest(students.getClass().getName(), students));
+        kafkaTemplate.send("report_requests", new ReportRequest("student-performance-classname", students));
+        return students;
+    }
+
+    public List<Student> getAllStudentPerformance() {
+        List<Student> students = studentRepository.findAll();
+        kafkaTemplate.send("report_requests", new ReportRequest("student-performance-all", students));
         return students;
     }
 
     public List<Student> getStudentDetailsWithName(String studentName) throws CustomException {
-        List<Student> students = studentRepository.findByStudentName(studentName);
+        List<Student> students = studentRepository.findByStudentNameIgnoreCase(studentName);
         if (!students.isEmpty()) {
-            kafkaTemplate.send("report_requests", new ReportRequest(students.getClass().getName(), students));
+            kafkaTemplate.send("report_requests", new ReportRequest("student-performance-studentname", students));
             return students;
         } else throw new CustomException("Student name not found");
     }
 
     public List<SubjectAverageTopic> getSubjectAverageTopic(String className, String subjectName) throws CustomException {
         List<SubjectAverageTopic> SubjectAverageTopicList =
-                subjectAverageTopicRepository.findByClassName(className);
+                subjectAverageTopicRepository.findByClassNameIgnoreCase(className);
 
         if (!SubjectAverageTopicList.isEmpty()) {
             List<SubjectAverageTopic> subjectAverageTopicslist1 = new ArrayList<>();
@@ -76,17 +79,15 @@ public class ReportService {
                 subjectAverageTopic.setCreationDate(SubjectAverageTopicList.get(i).getCreationDate());
                 subjectAverageTopicslist1.add(subjectAverageTopic);
             }
-            kafkaTemplate.send("report_requests", new ReportRequest(subjectAverageTopicslist1.getClass().getName(), subjectAverageTopicslist1));
+            kafkaTemplate.send("report_requests", new ReportRequest("school-performance-classname-subjectname", subjectAverageTopicslist1));
             return subjectAverageTopicslist1;
         } else throw new CustomException("Class name not found");
-
     }
 
-    public List<SubjectAverageTopic> getSchoolsAllSubjectAverage(String className) throws CustomException {
-        List<SubjectAverageTopic> SubjectAverageTopicList =
-                subjectAverageTopicRepository.findByClassName(className);
+    public List<SubjectAverageTopic> getSchoolsAllSubjectAverage(String className) throws CustomException, JsonProcessingException {
+        List<SubjectAverageTopic> SubjectAverageTopicList = subjectAverageTopicRepository.findByClassNameIgnoreCase(className);
         if (!SubjectAverageTopicList.isEmpty()) {
-            kafkaTemplate.send("report_requests", new ReportRequest(SubjectAverageTopicList.getClass().getName(), SubjectAverageTopicList));
+            kafkaTemplate.send("report_requests", new ReportRequest("school-performance-classname", SubjectAverageTopicList));
             return SubjectAverageTopicList;
         } else throw new CustomException("class name not found");
     }
@@ -100,6 +101,6 @@ public class ReportService {
     )
     public void listenReportRequests(ReportRequest reportRequest) {
         logger.info(reportRequest.toString());
-        simpMessagingTemplate.convertAndSend("/topic/report_requests", reportRequest);
+        simpMessagingTemplate.convertAndSend("/topic/" + reportRequest.getReportFor(), reportRequest);
     }
 }

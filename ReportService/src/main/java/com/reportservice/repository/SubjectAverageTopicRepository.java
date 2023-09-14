@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface SubjectAverageTopicRepository extends MongoRepository<SubjectAverageTopic, String> {
 
-    List<SubjectAverageTopic> findByClassName(String className);
+    List<SubjectAverageTopic> findByClassNameIgnoreCase(String className);
 }
