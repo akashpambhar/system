@@ -1,10 +1,7 @@
 package com.analyticsservice.service;
 
 import com.analyticsservice.model.*;
-import com.analyticsservice.repository.SchoolAverageRepository;
-import com.analyticsservice.repository.SchoolReportRepository;
-import com.analyticsservice.repository.StudentReportRepository;
-import com.analyticsservice.repository.TopperRepository;
+import com.analyticsservice.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +28,9 @@ public class KafkaStreamsProcessor {
 
     @Autowired
     private TopperRepository topperRepository;
+
+    @Autowired
+    private SubjectAverageTopicRepository subjectAverageTopicRepository;
 
     @Autowired
     private KafkaTemplate<String, Object> kafkaTemplate;
@@ -197,7 +197,7 @@ public class KafkaStreamsProcessor {
         saveStudentReport(school, studentReports);
 
         // send to kafka topic, topic_average_marks
-        sendSubjectWiseAverageToKafkaTopic(school.getSchoolName(), subjectWiseAverage);
+        sendSubjectWiseAverageToKafkaTopic(school.getSchoolName(), subjectWiseAverage, school);
 
         // send to kafka topic, school_average_marks
         sendSchoolAverageToKafkaTopic(school.getSchoolName(), totalAverage);
@@ -209,6 +209,7 @@ public class KafkaStreamsProcessor {
         SchoolAverage schoolAverage = new SchoolAverage();
         schoolAverage.setSchoolName(school.getSchoolName());
         schoolAverage.setSubjectAverage(subjectWiseAverage);
+        schoolAverage.setClassName(school.getStudents().get(1).getClassName());
         schoolAverage.setSchoolAverage(roundOffAverage(totalAverage));
         schoolAverage.setCreationDate(LocalDateTime.now());
         schoolAverageRepository.save(schoolAverage);
@@ -225,10 +226,15 @@ public class KafkaStreamsProcessor {
         }
     }
 
-    public void sendSubjectWiseAverageToKafkaTopic(String schoolName, Map<String, Double> subjectWiseAverage) {
+    public void sendSubjectWiseAverageToKafkaTopic(String schoolName, Map<String, Double> subjectWiseAverage, School school) {
         SubjectAverageTopic subjectAverageTopic = new SubjectAverageTopic();
         subjectAverageTopic.setSchoolName(schoolName);
+        subjectAverageTopic.setClassName(school.getStudents().get(1).getClassName());
+        subjectAverageTopic.setSession(school.getStudents().get(1).getSession());
         subjectAverageTopic.setSubjectAverage(subjectWiseAverage);
+        LocalDateTime now = LocalDateTime.now();
+        subjectAverageTopic.setCreationDate(now);
+        subjectAverageTopicRepository.save(subjectAverageTopic);
         kafkaTemplate.send("topic_average_marks", subjectAverageTopic);
     }
 

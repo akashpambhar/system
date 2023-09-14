@@ -35,4 +35,8 @@ export class StudentService {
 
     return this.http.post(`${this.apiUrl}/marks/csv`, formData);
   }
+
+  getUserReport(): Observable<any>{
+    return this.http.get<IChartData[]>(`${this.apiUrl}/school/upload-data`);
+  }
 }

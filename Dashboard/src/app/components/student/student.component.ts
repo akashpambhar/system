@@ -14,6 +14,7 @@ export class StudentComponent implements OnInit {
 
   selectedStudent: Student | undefined;
   studentId = "";
+  responseUploadData:any
 
   barChartOptions: ChartConfiguration['options'] = {
     responsive: true
@@ -35,6 +36,7 @@ export class StudentComponent implements OnInit {
   ngOnInit(): void {
     this.showMarks();
 
+
     this.webSocketService.subscribe('/topic/chart-data', (data: any) => {
       data = JSON.parse(data.body)
 
@@ -49,6 +51,11 @@ export class StudentComponent implements OnInit {
       };
 
       this.barChartData = updatedChartData
+    })
+
+
+    this.webSocketService.subscribe('/topic/upload-data', (data: any) => {
+      this.responseUploadData = JSON.parse(data.body)
     })
   }
 
@@ -99,6 +106,12 @@ export class StudentComponent implements OnInit {
           console.error('File upload failed:', error);
         }
       );
+  }
+
+  getUserReport(){
+    this.studentService.getUserReport().subscribe(data => {
+      console.log(data)
+    });
   }
 }
 

@@ -1,0 +1,43 @@
+<div class="container mt-4">
+  <div class="form-group">
+    <select
+      id="elementSelector"
+      name="elementSelector"
+      [(ngModel)]="selectedElement"
+      class="form-control"
+    >
+      <option value="select-report-type">
+        Select Report Type
+      </option>
+      <option value="student-performance-classname">
+        Student Performance by Class Name
+      </option>
+      <option value="student-performance-studentname">
+        Student Performance by Student Name
+      </option>
+      <option value="student-performance-all">Student Performance All</option>
+      <option value="school-performance-classname">
+        School Performance by Class Name
+      </option>
+      <option value="school-performance-classname-subjectname">
+        School Performance by Class Name and Subject Name
+      </option>
+    </select>
+  </div>
+</div>
+
+<app-student-performance-classname
+  *ngIf="selectedElement === 'student-performance-classname'"
+></app-student-performance-classname>
+<app-student-performance-studentname
+  *ngIf="selectedElement === 'student-performance-studentname'"
+></app-student-performance-studentname>
+<app-student-performance-all
+  *ngIf="selectedElement === 'student-performance-all'"
+></app-student-performance-all>
+<app-school-performance-classname
+  *ngIf="selectedElement === 'school-performance-classname'"
+></app-school-performance-classname>
+<app-school-performance-classname-subjectname
+  *ngIf="selectedElement === 'school-performance-classname-subjectname'"
+></app-school-performance-classname-subjectname>

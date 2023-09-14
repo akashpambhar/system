@@ -5,6 +5,8 @@ import com.datacollectorservice.exception.CustomException;
 import com.datacollectorservice.model.School;
 import com.datacollectorservice.model.SchoolAverage;
 import com.datacollectorservice.model.Student;
+import com.datacollectorservice.model.UserReport;
+import com.datacollectorservice.repository.UserReportRepository;
 import com.datacollectorservice.service.StudentService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -74,5 +76,13 @@ public class StudentController {
     @PreAuthorize("hasRole('TEACHER')")
     public List<SchoolAverage> getSchoolAverages() {
         return studentService.getSchoolAverages();
+    }
+
+    @GetMapping("/school/upload-data")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<UserReport> getUploadInformation(){
+        List<UserReport> userReports = studentService.getAllUserReport();
+        simpMessagingTemplate.convertAndSend("/topic/upload-data", userReports);
+        return userReports;
     }
 }

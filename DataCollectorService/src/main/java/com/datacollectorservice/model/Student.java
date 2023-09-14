@@ -20,6 +20,10 @@ public class Student {
     @Id
     private String id;
 
+    private String schoolName;
+
+    private String session;
+
     @NotBlank(message = "Student name cannot be empty")
     private String studentName;
 
