@@ -1,4 +1,4 @@
-package com.datacollectorservice.model;
+package com.reportservice.model;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -20,12 +20,12 @@ public class Student {
     @Id
     private String id;
 
+    @NotBlank(message = "Student name cannot be empty")
+    private String studentName;
+
     private String schoolName;
 
     private String session;
-
-    @NotBlank(message = "Student name cannot be empty")
-    private String studentName;
 
     private String className;
 

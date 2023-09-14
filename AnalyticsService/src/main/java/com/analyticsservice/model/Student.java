@@ -23,6 +23,10 @@ public class Student {
     @NotBlank(message = "Student name cannot be empty")
     private String studentName;
 
+    private String schoolName;
+
+    private String session;
+
     private String className;
 
     @Valid

@@ -21,6 +21,8 @@ public class SchoolAverage {
 
     String schoolName;
 
+    String className;
+
     Double schoolAverage;
 
     Map<String, Double> subjectAverage;
