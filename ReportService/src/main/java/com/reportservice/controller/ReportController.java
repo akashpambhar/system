@@ -25,8 +25,8 @@ public class ReportController {
     }
 
     @GetMapping("/student-performance/all")
-    public List<Student> getStudents() {
-        return reportService.getAllStudentPerformance();
+    public void getStudents() {
+        reportService.getAllStudentPerformance();
     }
 
     @GetMapping("/student-performance/student/{studentName}")

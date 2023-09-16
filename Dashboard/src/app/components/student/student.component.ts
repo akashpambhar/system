@@ -29,34 +29,14 @@ export class StudentComponent implements OnInit {
   };
 
   selectedFile: File | null = null;
+  isSubscribed = false;
+  isSubscribedReport = false;
 
   constructor(private studentService: StudentService,
     private webSocketService: WebSocketService) { }
 
   ngOnInit(): void {
     this.showMarks();
-
-
-    this.webSocketService.subscribe('/topic/chart-data', (data: any) => {
-      data = JSON.parse(data.body)
-
-      const labels = this.barChartData.labels
-      labels?.push(this.formatDateTime(data.creationDate))
-      const da = this.barChartData.datasets[0].data
-      da.push(data.studentCount);
-
-      const updatedChartData: ChartData<'bar'> = {
-        labels: labels,
-        datasets: [{ data: da, label: 'Students' }]
-      };
-
-      this.barChartData = updatedChartData
-    })
-
-
-    this.webSocketService.subscribe('/topic/upload-data', (data: any) => {
-      this.responseUploadData = JSON.parse(data.body)
-    })
   }
 
   showMarks(): void {
@@ -97,6 +77,10 @@ export class StudentComponent implements OnInit {
       return;
     }
 
+    if(!this.isSubscribed){
+      this.subscribe();
+    }
+
     this.studentService.uploadFile(this.selectedFile)
       .subscribe(
         (response) => {
@@ -109,9 +93,38 @@ export class StudentComponent implements OnInit {
   }
 
   getUserReport(){
+    if(!this.isSubscribedReport){
+      this.subscribeToReport();
+    }
+    
     this.studentService.getUserReport().subscribe(data => {
       console.log(data)
     });
+  }
+
+  subscribe(){
+    this.webSocketService.subscribe('/topic/chart-data', (data: any) => {
+      data = JSON.parse(data.body)
+      this.isSubscribed = true;
+
+      const labels = this.barChartData.labels
+      labels?.push(this.formatDateTime(data.creationDate))
+      const da = this.barChartData.datasets[0].data
+      da.push(data.studentCount);
+
+      const updatedChartData: ChartData<'bar'> = {
+        labels: labels,
+        datasets: [{ data: da, label: 'Students' }]
+      };
+
+      this.barChartData = updatedChartData
+    })
+  }
+
+  subscribeToReport(){
+    this.webSocketService.subscribe('/topic/upload-data', (data: any) => {
+      this.responseUploadData = JSON.parse(data.body)
+    })
   }
 }
 

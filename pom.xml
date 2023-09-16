@@ -24,6 +24,7 @@
 	<modules>
 		<module>DataCollectorService</module>
 		<module>AnalyticsService</module>
+		<module>ReportService</module>
 	</modules>
 
 	<build>

@@ -46,10 +46,8 @@ public class ReportService {
         return students;
     }
 
-    public List<Student> getAllStudentPerformance() {
-        List<Student> students = studentRepository.findAll();
-        kafkaTemplate.send("report_requests", new ReportRequest("student-performance-all", students));
-        return students;
+    public void getAllStudentPerformance() {
+        kafkaTemplate.send("report_requests", new ReportRequest("student-performance-all", null));
     }
 
     public List<Student> getStudentDetailsWithName(String studentName) throws CustomException {
@@ -101,6 +99,11 @@ public class ReportService {
     )
     public void listenReportRequests(ReportRequest reportRequest) {
         logger.info(reportRequest.toString());
+
+        if(reportRequest.getReportFor().equals("student-performance-all")){
+            reportRequest.setObject(studentRepository.findAll());
+        }
+
         simpMessagingTemplate.convertAndSend("/topic/" + reportRequest.getReportFor(), reportRequest);
     }
 }

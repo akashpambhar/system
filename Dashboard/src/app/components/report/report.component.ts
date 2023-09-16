@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { WebSocketService } from 'src/app/services/web-socket.service';
 
 @Component({
   selector: 'app-report',
@@ -9,9 +10,10 @@ export class ReportComponent implements OnInit {
 
   selectedElement: string = 'select-report-type';
 
-  constructor() { }
+  constructor(private webSocketService: WebSocketService) { }
 
   ngOnInit(): void {
+
   }
 
 }

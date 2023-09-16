@@ -15,38 +15,22 @@ export class WebSocketService {
   stompClientReport = Stomp.over(this.socketReport);
 
   constructor() {
+    if(!this.stompClient.connected)
+      this.stompClient.connect({}, (): any => { })
+    
+    if(!this.stompClientReport.connected)
+      this.stompClientReport.connect({}, (): any => { })
   }
 
   subscribe(topic: string, callback: any) {
-    this.stompClient.connect({}, (): any => {
-      this.subscribeToTopic(topic, callback);
-    })
-  }
-
-  private subscribeToTopic(topic: string, callback: any) {
     this.stompClient.subscribe(topic, (data) => {
       callback(data)
     })
   }
 
   subscribeReport(topic: string, callback: any) {
-    if (!this.stompClientReport.connected) {
-      this.stompClientReport.connect({}, (): any => {
-        this.subscribeToTopicReport(topic, callback);
-      })
-    } else {
-      this.subscribeToTopicReport(topic, callback);
-    }
-  }
-
-  private subscribeToTopicReport(topic: string, callback: any) {
     this.stompClientReport.subscribe(topic, (data) => {
       callback(data)
     })
-  }
-
-  destroy() {
-    this.stompClientReport.disconnect(() => { });
-
   }
 }
