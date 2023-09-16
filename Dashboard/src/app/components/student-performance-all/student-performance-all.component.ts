@@ -22,5 +22,4 @@ export class StudentPerformanceAllComponent implements OnInit {
       this.response = data.object;
     })
   }
-
 }
