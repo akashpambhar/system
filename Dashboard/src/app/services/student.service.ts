@@ -39,4 +39,12 @@ export class StudentService {
   getUserReport(): Observable<any>{
     return this.http.get<IChartData[]>(`${this.apiUrl}/school/upload-data`);
   }
+
+  getSchools(): Observable<any>{
+    return this.http.get(`${this.apiUrl}/school`);
+  }
+
+  getSchoolOfAdmin(): Observable<any>{
+    return this.http.get(`${this.apiUrl}/school/admin`);
+  }
 }

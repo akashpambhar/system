@@ -10,6 +10,7 @@ import jwt_decode from "jwt-decode";
 export class AuthService {
 
   private apiUrl = 'http://localhost:8080/api/auth';
+  private apiUserUrl = 'http://localhost:8080/api/user'
   private tokenSubject = new BehaviorSubject<string>("");
 
   constructor(private http: HttpClient, private cookieService: CookieService) {

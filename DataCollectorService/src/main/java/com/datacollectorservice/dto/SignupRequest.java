@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -22,4 +23,6 @@ public class SignupRequest {
     private String password;
 
     private Set<String> roles;
+
+    private List<String> assignedSchool;
 }

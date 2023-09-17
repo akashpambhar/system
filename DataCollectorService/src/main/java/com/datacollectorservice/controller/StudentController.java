@@ -85,4 +85,16 @@ public class StudentController {
         simpMessagingTemplate.convertAndSend("/topic/upload-data", userReports);
         return userReports;
     }
+
+    @GetMapping("/school")
+//    @PreAuthorize("hasRole('ADMIN')")
+    public List<String> getSchoolList(){
+        return studentService.getSchools();
+    }
+
+    @GetMapping("/school/admin")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<String> getSchoolListOfAdmin(){
+        return studentService.getSchoolOfAdmin();
+    }
 }
