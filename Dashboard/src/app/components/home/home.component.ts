@@ -26,8 +26,11 @@ export class HomeComponent implements OnInit {
     this.authService.login(this.formData.username, this.formData.password)
       .subscribe(
         response => {
-          if (this.authService.getRole() === "ROLE_ADMIN") {
-            this.router.navigate(['/student']);
+          if (this.authService.getRole() === "ROLE_SUPERUSER") {
+            this.router.navigate(['/super-admin-dashboard']);
+          }
+          else if (this.authService.getRole() === "ROLE_ADMIN") {
+            this.router.navigate(['/admin-dashboard']);
           } else if (this.authService.getRole() === "ROLE_TEACHER") {
             this.router.navigate(['/average']);
           }

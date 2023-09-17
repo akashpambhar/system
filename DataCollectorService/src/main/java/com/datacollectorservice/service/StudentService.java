@@ -3,6 +3,7 @@ package com.datacollectorservice.service;
 import com.datacollectorservice.dto.ChartData;
 import com.datacollectorservice.exception.CustomException;
 import com.datacollectorservice.model.*;
+import com.datacollectorservice.model.security.User;
 import com.datacollectorservice.repository.*;
 import com.datacollectorservice.security.service.UserDetailsImpl;
 import com.opencsv.CSVReader;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentService {
@@ -44,6 +46,9 @@ public class StudentService {
     @Autowired
     private UserReportRepository userReportRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     public ChartData processJsonMarks(School school) {
         studentRepository.saveAll(school.getStudents());
         schoolRepository.save(school);
@@ -63,8 +68,11 @@ public class StudentService {
             School school = new School();
             List<Student> students = new ArrayList<>();
 
+            checkAssignedSchool(reader);
+
             while ((line = reader.readNext()) != null) {
                 school.setSchoolName(line[0]);
+
                 Student student = new Student();
                 student.setSchoolName(line[0]);
                 student.setSession(line[1]);
@@ -173,5 +181,37 @@ public class StudentService {
 
     public List<UserReport> getAllUserReport(){
         return userReportRepository.findAll();
+    }
+
+    public List<String> getSchools(){
+        return schoolRepository.findAll().stream().map(School :: getSchoolName).collect(Collectors.toList());
+    }
+
+    public List<String> getSchoolOfAdmin(){
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        Optional<User> user = userRepository.findByUsername(userDetails.getUsername());
+
+        return user.get().getAssignedSchool();
+    }
+
+    private void checkAssignedSchool(CSVReader reader) throws IOException, CustomException {
+        String[] firstLine;
+        firstLine = reader.peek();
+        String schoolName = firstLine[0];
+        boolean isOk = false;
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        Optional<User> user = userRepository.findByUsername(userDetails.getUsername());
+
+        for (String assignedSchool: user.get().getAssignedSchool()) {
+            if(assignedSchool.equals(schoolName)){
+                isOk = true;
+                break;
+            }
+        }
+
+        if (!isOk) throw new CustomException("not allowed to add school");
     }
 }

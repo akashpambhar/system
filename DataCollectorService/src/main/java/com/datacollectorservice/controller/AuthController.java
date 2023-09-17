@@ -10,6 +10,7 @@ import com.datacollectorservice.repository.UserRepository;
 import com.datacollectorservice.security.jwt.JwtUtils;
 import com.datacollectorservice.security.service.UserDetailsImpl;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +22,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @CrossOrigin
 @RestController
 @RequestMapping("/api/auth")
+@Slf4j
 public class AuthController {
 
     @Autowired
@@ -69,6 +73,7 @@ public class AuthController {
         User user = new User();
         user.setUsername(signUpRequest.getUsername());
         user.setPassword(encoder.encode(signUpRequest.getPassword()));
+        user.setAssignedSchool(signUpRequest.getAssignedSchool());
 
         Set<String> strRoles = signUpRequest.getRoles();
         Set<Role> roles = new HashSet<>();
@@ -79,7 +84,12 @@ public class AuthController {
             roles.add(userRole);
         } else {
             strRoles.forEach(role -> {
-                if (role.equalsIgnoreCase("admin")) {
+                if (role.equalsIgnoreCase("superadmin")) {
+                    Role adminRole = roleRepository.findByName(ERole.ROLE_SUPERUSER)
+                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    roles.add(adminRole);
+                }
+                else if (role.equalsIgnoreCase("admin")) {
                     Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
                             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                     roles.add(adminRole);
