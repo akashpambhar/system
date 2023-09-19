@@ -1,11 +1,23 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand">Advance Student Report System</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item m-2">
+          <a class="nav-link" routerLinkActive="active" routerLink="/">Login</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
 <div class="container mt-4">
   <div class="form-group">
-    <select
-      id="elementSelector"
-      name="elementSelector"
-      [(ngModel)]="selectedElement"
-      class="form-control"
-    >
+    <select id="elementSelector" name="elementSelector" [(ngModel)]="selectedElement" class="form-control">
       <option value="select-report-type">
         Select Report Type
       </option>
@@ -27,17 +39,11 @@
 </div>
 
 <app-student-performance-classname
-  *ngIf="selectedElement === 'student-performance-classname'"
-></app-student-performance-classname>
+  *ngIf="selectedElement === 'student-performance-classname'"></app-student-performance-classname>
 <app-student-performance-studentname
-  *ngIf="selectedElement === 'student-performance-studentname'"
-></app-student-performance-studentname>
-<app-student-performance-all
-  *ngIf="selectedElement === 'student-performance-all'"
-></app-student-performance-all>
+  *ngIf="selectedElement === 'student-performance-studentname'"></app-student-performance-studentname>
+<app-student-performance-all *ngIf="selectedElement === 'student-performance-all'"></app-student-performance-all>
 <app-school-performance-classname
-  *ngIf="selectedElement === 'school-performance-classname'"
-></app-school-performance-classname>
+  *ngIf="selectedElement === 'school-performance-classname'"></app-school-performance-classname>
 <app-school-performance-classname-subjectname
-  *ngIf="selectedElement === 'school-performance-classname-subjectname'"
-></app-school-performance-classname-subjectname>
+  *ngIf="selectedElement === 'school-performance-classname-subjectname'"></app-school-performance-classname-subjectname>

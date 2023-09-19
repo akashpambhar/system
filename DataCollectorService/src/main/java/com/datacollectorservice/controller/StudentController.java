@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @CrossOrigin
 @RestController
@@ -81,14 +82,13 @@ public class StudentController {
     @GetMapping("/school/upload-data")
     @PreAuthorize("hasRole('ADMIN')")
     public List<UserReport> getUploadInformation(){
-        List<UserReport> userReports = studentService.getAllUserReport();
+        List<UserReport> userReports = studentService.getAllUserReportByUsername();
         simpMessagingTemplate.convertAndSend("/topic/upload-data", userReports);
         return userReports;
     }
 
     @GetMapping("/school")
-//    @PreAuthorize("hasRole('ADMIN')")
-    public List<String> getSchoolList(){
+    public Set<String> getSchoolList(){
         return studentService.getSchools();
     }
 

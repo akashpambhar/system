@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 public class JwtUtils {
@@ -28,6 +30,8 @@ public class JwtUtils {
 
     @Value("${system.app.jwtCookieName}")
     private String jwtCookie;
+
+    private Set<String> invalidatedTokens = new HashSet<>();
 
     public String getJwtFromCookies(HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
@@ -71,6 +75,14 @@ public class JwtUtils {
         }
 
         return false;
+    }
+
+    public void invalidateToken(String token) {
+        invalidatedTokens.add(token);
+    }
+
+    public boolean isTokenInvalid(String token) {
+        return invalidatedTokens.contains(token);
     }
 
     public String generateTokenFromUsername(String username,

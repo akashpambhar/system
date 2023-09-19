@@ -109,4 +109,9 @@ public class AuthController {
 
         return new ResponseEntity<>("{\"message\":\"User registered successfully!\"}", HttpStatus.OK);
     }
+
+    @GetMapping("/logout/{token}")
+    public void logout(@PathVariable String token){
+        jwtUtils.invalidateToken(token);
+    }
 }

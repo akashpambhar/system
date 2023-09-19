@@ -1,3 +1,32 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand">Advance Student Report System</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item m-2">
+          <a class="nav-link" routerLinkActive="active" routerLink="/admin-dashboard">Admin Dashboard</a>
+        </li>
+        <li class="nav-item m-2">
+          <a class="nav-link" routerLinkActive="active" routerLink="/student">Student</a>
+        </li>
+        <li class="nav-item m-2">
+          <a class="nav-link" routerLinkActive="active" routerLink="/report">Student Report</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link btn btn-danger m-2" (click)="logout()">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
 <div class="container mt-5 mb-3">
   <div class="row justify-content-center">
     <h1 style="text-align: center" class="mb-3">Student data</h1>
@@ -8,12 +37,7 @@
           <form (submit)="onSubmit()" enctype="multipart/form-data">
             <div class="mb-3">
               <label for="file" class="form-label">Choose File</label>
-              <input
-                type="file"
-                class="form-control"
-                (change)="selectFile($event)"
-                required
-              />
+              <input type="file" class="form-control" (change)="selectFile($event)" required />
             </div>
             <button type="submit" class="btn btn-primary">Upload File</button>
           </form>
@@ -24,13 +48,7 @@
 </div>
 <div class="container m-auto">
   <div class="m-auto" style="display: block; width: 800px;">
-    <canvas
-      baseChart
-      class="chart"
-      [data]="barChartData"
-      [options]="barChartOptions"
-      [type]="barChartType"
-    >
+    <canvas baseChart class="chart" [data]="barChartData" [options]="barChartOptions" [type]="barChartType">
     </canvas>
   </div>
 </div>

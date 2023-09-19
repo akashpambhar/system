@@ -10,7 +10,6 @@ import jwt_decode from "jwt-decode";
 export class AuthService {
 
   private apiUrl = 'http://localhost:8080/api/auth';
-  private apiUserUrl = 'http://localhost:8080/api/user'
   private tokenSubject = new BehaviorSubject<string>("");
 
   constructor(private http: HttpClient, private cookieService: CookieService) {
@@ -37,6 +36,10 @@ export class AuthService {
       );
   }
 
+  logout(){
+    return this.http.get(`${this.apiUrl}/logout/${this.getToken()}`);
+  }
+
   signup(formData: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/signup`, formData);
   }
@@ -45,9 +48,14 @@ export class AuthService {
     return this.tokenSubject.value;
   }
 
+  removeToken(){
+    this.tokenSubject.next("");
+    this.cookieService.deleteAll();
+  }
+
   getRole(): string {
     const token = this.getToken();
-    if (token) {
+    if (token != "") {
       const decodedToken: any = jwt_decode(token);
 
       return decodedToken?.roles[0].authority;
