@@ -4,6 +4,8 @@ import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { Student } from './student.interface';
 import { StudentService } from 'src/app/services/student.service';
 import { WebSocketService } from 'src/app/services/web-socket.service';
+import { AuthService } from 'src/app/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-student',
@@ -33,7 +35,9 @@ export class StudentComponent implements OnInit {
   isSubscribedReport = false;
 
   constructor(private studentService: StudentService,
-    private webSocketService: WebSocketService) { }
+    private webSocketService: WebSocketService,
+    private authService: AuthService,
+    private router: Router) { }
 
   ngOnInit(): void {
     this.showMarks();
@@ -124,6 +128,13 @@ export class StudentComponent implements OnInit {
   subscribeToReport(){
     this.webSocketService.subscribe('/topic/upload-data', (data: any) => {
       this.responseUploadData = JSON.parse(data.body)
+    })
+  }
+
+  logout() {
+    this.authService.logout().subscribe(() => {
+      this.authService.removeToken();
+      this.router.navigate(['/']);
     })
   }
 }

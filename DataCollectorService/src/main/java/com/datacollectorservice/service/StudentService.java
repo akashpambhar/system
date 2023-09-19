@@ -179,12 +179,21 @@ public class StudentService {
         return chartRepository.save(chartData);
     }
 
-    public List<UserReport> getAllUserReport(){
-        return userReportRepository.findAll();
+    public List<UserReport> getAllUserReportByUsername(){
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        Optional<User> user = userRepository.findByUsername(userDetails.getUsername());
+
+        return userReportRepository.findAllByUsernameIs(user.get().getUsername());
     }
 
-    public List<String> getSchools(){
-        return schoolRepository.findAll().stream().map(School :: getSchoolName).collect(Collectors.toList());
+    public Set<String> getSchools(){
+        List<School> schools = schoolRepository.findAllByOrderBySchoolName();
+        Set<String> schoolSet = new HashSet<>();
+        for(School school: schools){
+            schoolSet.add(school.getSchoolName());
+        }
+        return schoolSet;
     }
 
     public List<String> getSchoolOfAdmin(){
@@ -206,7 +215,7 @@ public class StudentService {
         Optional<User> user = userRepository.findByUsername(userDetails.getUsername());
 
         for (String assignedSchool: user.get().getAssignedSchool()) {
-            if(assignedSchool.equals(schoolName)){
+            if(assignedSchool.equalsIgnoreCase(schoolName)){
                 isOk = true;
                 break;
             }

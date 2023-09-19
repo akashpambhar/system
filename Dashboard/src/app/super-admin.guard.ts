@@ -15,6 +15,7 @@ export class SuperAdminGuard implements CanActivate {
     if (userRole === 'ROLE_SUPERUSER') {
       return true;
     } else {
+      console.log("SUPER ADMIN GUARD else Condi");
       this.router.navigate(['/']);
       return false;
     }

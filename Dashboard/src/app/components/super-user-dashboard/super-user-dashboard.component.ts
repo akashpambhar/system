@@ -15,7 +15,7 @@ export class SuperUserDashboardComponent implements OnInit {
     username: '',
     password: '',
     roles: ['ADMIN'],
-    assignedSchool : ['']
+    assignedSchool: ['']
   };
 
   roles = [];
@@ -31,21 +31,15 @@ export class SuperUserDashboardComponent implements OnInit {
   }
 
   signup() {
-    if (this.formData.id != "") {
-      console.log(this.formData.id);
-      this.editUser();
-    }
-    else {
-      this.authService.signup(this.formData)
-        .subscribe(
-          response => {
-            this.router.navigate(['/']);
-          },
-          error => {
-            console.error('Signup failed:', error);
-          }
-        );
-    }
+    this.authService.signup(this.formData)
+      .subscribe(
+        response => {
+          this.router.navigate(['/']);
+        },
+        error => {
+          console.error('Signup failed:', error);
+        }
+      );
   }
 
   loadAllAdminUser() {
@@ -56,23 +50,8 @@ export class SuperUserDashboardComponent implements OnInit {
     )
   }
 
-  SetUserToForm(user: any) {
-    this.formData.id = user.id;
-    this.formData.username = user.username
-    this.formData.password = user.password
-    this.formData.roles = user.roles
-
-  }
-
-  editUser() {
-    this.userService.editUser(this.formData, this.formData.id).subscribe(response => {
-      console.log('Edit API response:', response);
-      this.loadAllAdminUser()
-    })
-  };
-
-  getSchools(){
-    this.studentService.getSchools().subscribe((response : any) => {
+  getSchools() {
+    this.studentService.getSchools().subscribe((response: any) => {
       this.assignedSchool = response;
     })
   }
@@ -82,5 +61,12 @@ export class SuperUserDashboardComponent implements OnInit {
     this.formData.username = '';
     this.formData.password = '';
     this.formData.roles = ['ADMIN'];
+  }
+
+  logout() {
+    this.authService.logout().subscribe(() => {
+      this.authService.removeToken();
+      this.router.navigate(['/']);
+    })
   }
 }

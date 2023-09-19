@@ -42,4 +42,11 @@ export class AdminDashboardComponent implements OnInit {
       this.assignedSchool = response;
     })
   }
+
+  logout() {
+    this.authService.logout().subscribe(() => {
+      this.authService.removeToken();
+      this.router.navigate(['/']);
+    })
+  }
 }
