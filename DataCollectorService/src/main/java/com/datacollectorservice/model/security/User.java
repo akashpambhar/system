@@ -33,4 +33,6 @@ public class User {
     private Set<Role> roles = new HashSet<>();
 
     private List<String> assignedSchool;
+
+    private String studentId;
 }

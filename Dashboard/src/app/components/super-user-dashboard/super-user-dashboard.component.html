@@ -51,10 +51,8 @@
 
                         <div class="mb-3">
                             <label for="assignedSchool" class="form-label">School</label>
-                            <select class="form-select" id="assignedSchool" name="assignedSchool"
-                                [(ngModel)]="formData.assignedSchool" required multiple>
-                                <option *ngFor="let school of assignedSchool" [value]="school">{{ school }}</option>
-                            </select>
+                            <input class="form-control" id="assignedSchool" name="assignedSchool"
+                                [(ngModel)]="formData.assignedSchool" required />
                         </div>
                         <button type="submit" class="btn btn-primary">Create User</button>
                         <button type="button" class="btn btn-secondary" (click)="clearForm()"

@@ -16,6 +16,14 @@ export class StudentService {
     return this.http.get<Student[]>(this.apiUrl);
   }
 
+  getStudentDashboard(studentId : string): Observable<Student[]>{
+    return this.http.get<Student[]>(this.apiUrl + "/student/dashboard/" + studentId);
+  }
+
+  getAllStudentsFromSchool(schoolName:string): Observable<Student[]> {
+    return this.http.get<Student[]>(this.apiUrl + "/student/school/" + schoolName);
+  }
+
   getStudentById(id: string): Observable<Student> {
     return this.http.get<Student>(`${this.apiUrl}/student/id/${id}`);
   }
@@ -46,5 +54,9 @@ export class StudentService {
 
   getSchoolOfAdmin(): Observable<any>{
     return this.http.get(`${this.apiUrl}/school/admin`);
+  }
+
+  getClassWiseTopperBySchoolName(name: string){
+    return this.http.get(`${this.apiUrl}/student/toppers/${name}`);
   }
 }

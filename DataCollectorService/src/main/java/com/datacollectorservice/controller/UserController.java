@@ -18,7 +18,6 @@ import java.util.*;
 @RestController
 @CrossOrigin
 @RequestMapping("/api/user")
-@Slf4j
 public class UserController {
 
     @Autowired
@@ -34,8 +33,6 @@ public class UserController {
 
             List<User> users = userRepository.findAll();
 
-            log.info(users.toString());
-
             List<User> adminUser = users.stream().filter(user -> user.getRoles().contains(role)).toList();
 
             return ResponseEntity.ok(adminUser);
@@ -50,60 +47,7 @@ public class UserController {
             List<Role> roles = roleRepository.findAll();
             return ResponseEntity.ok(roles);
         } catch (Exception e) {
-            log.info(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
-
-    @PutMapping("/{userId}")
-    public ResponseEntity<?> updateUser(@PathVariable String userId, @Valid @RequestBody SignupRequest signUpRequest) {
-        try {
-            // Find the user by ID
-            Optional<User> optionalUser = userRepository.findById(userId);
-
-            if (optionalUser.isPresent()) {
-                User existingUser = optionalUser.get();
-
-                existingUser.setUsername(signUpRequest.getUsername());
-//                existingUser.setPassword(signUpRequest.getPassword());
-                existingUser.setAssignedSchool(signUpRequest.getAssignedSchool());
-
-                Set<String> strRoles = signUpRequest.getRoles();
-                Set<Role> roles = new HashSet<>();
-
-
-                strRoles.forEach(role -> {
-                    if (role.equalsIgnoreCase("admin")) {
-                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(adminRole);
-                    } else if (role.equalsIgnoreCase("teacher")) {
-                        Role teacherRole = roleRepository.findByName(ERole.ROLE_TEACHER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(teacherRole);
-                    }
-                    else if (role.equalsIgnoreCase("student")) {
-                        Role teacherRole = roleRepository.findByName(ERole.ROLE_TEACHER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(teacherRole);
-                    }
-                    else {
-                        throw new RuntimeException("Error: Unknown Role.");
-                    }
-
-                });
-
-                existingUser.setRoles(roles);
-
-                // Save the updated user
-                userRepository.save(existingUser);
-
-                return ResponseEntity.ok("User updated successfully");
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while updating the user.");
         }
     }
 }

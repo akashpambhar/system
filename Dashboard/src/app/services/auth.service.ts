@@ -62,4 +62,14 @@ export class AuthService {
     }
     return "";
   }
+
+  getStudentId(){
+    const token = this.getToken();
+    if (token != "") {
+      const decodedToken: any = jwt_decode(token);
+
+      return decodedToken?.studentId;
+    }
+    return "";
+  }
 }

@@ -15,11 +15,10 @@ export class SuperUserDashboardComponent implements OnInit {
     username: '',
     password: '',
     roles: ['ADMIN'],
-    assignedSchool: ['']
+    assignedSchool : null
   };
 
   roles = [];
-  assignedSchool = ['']
 
   users: any;
 
@@ -27,10 +26,13 @@ export class SuperUserDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadAllAdminUser()
-    this.getSchools()
   }
 
   signup() {
+
+    const schools : any = this.formData.assignedSchool;
+    this.formData.assignedSchool = schools.split(",")
+
     this.authService.signup(this.formData)
       .subscribe(
         response => {
@@ -48,12 +50,6 @@ export class SuperUserDashboardComponent implements OnInit {
         this.users = response
       }
     )
-  }
-
-  getSchools() {
-    this.studentService.getSchools().subscribe((response: any) => {
-      this.assignedSchool = response;
-    })
   }
 
   clearForm() {

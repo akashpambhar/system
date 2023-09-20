@@ -31,8 +31,12 @@ export class HomeComponent implements OnInit {
           }
           else if (this.authService.getRole() === "ROLE_ADMIN") {
             this.router.navigate(['/admin-dashboard']);
-          } else if (this.authService.getRole() === "ROLE_TEACHER") {
+          } 
+          else if (this.authService.getRole() === "ROLE_TEACHER") {
             this.router.navigate(['/average']);
+          }
+          else if (this.authService.getRole() === "ROLE_STUDENT") {
+            this.router.navigate(['/student-dashboard/' + this.authService.getStudentId()]);
           }
         },
         error => {

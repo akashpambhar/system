@@ -74,6 +74,7 @@ public class AuthController {
         user.setUsername(signUpRequest.getUsername());
         user.setPassword(encoder.encode(signUpRequest.getPassword()));
         user.setAssignedSchool(signUpRequest.getAssignedSchool());
+        user.setStudentId(signUpRequest.getStudentId());
 
         Set<String> strRoles = signUpRequest.getRoles();
         Set<Role> roles = new HashSet<>();
@@ -88,8 +89,7 @@ public class AuthController {
                     Role adminRole = roleRepository.findByName(ERole.ROLE_SUPERUSER)
                             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                     roles.add(adminRole);
-                }
-                else if (role.equalsIgnoreCase("admin")) {
+                } else if (role.equalsIgnoreCase("admin")) {
                     Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
                             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                     roles.add(adminRole);
@@ -97,10 +97,13 @@ public class AuthController {
                     Role teacherRole = roleRepository.findByName(ERole.ROLE_TEACHER)
                             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                     roles.add(teacherRole);
+                } else if (role.equalsIgnoreCase("student")) {
+                    Role studentRole = roleRepository.findByName(ERole.ROLE_STUDENT)
+                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    roles.add(studentRole);
                 } else {
                     throw new RuntimeException("Error: Unknown Role.");
                 }
-
             });
         }
 
@@ -111,7 +114,7 @@ public class AuthController {
     }
 
     @GetMapping("/logout/{token}")
-    public void logout(@PathVariable String token){
+    public void logout(@PathVariable String token) {
         jwtUtils.invalidateToken(token);
     }
 }

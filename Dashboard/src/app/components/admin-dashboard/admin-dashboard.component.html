@@ -55,10 +55,18 @@
             <div class="mb-3">
               <label for="assignedSchool" class="form-label">School</label>
               <select class="form-select" id="assignedSchool" name="assignedSchool"
-                [(ngModel)]="formData.assignedSchool" required multiple>
+                      [(ngModel)]="formData.assignedSchool" (ngModelChange)="onChangeSchool()" required multiple>
                 <option *ngFor="let school of assignedSchool" [value]="school">{{ school }}</option>
               </select>
             </div>
+
+            <div class="mb-3" *ngIf="formData.roles[0] === 'STUDENT'">
+              <label for="students" class="form-label">Students</label>
+              <select class="form-select" id="students" name="students" [(ngModel)]="formData.studentId" required>
+                <option *ngFor="let student of students" [value]="student.id">{{ student.studentName }}</option>
+              </select>
+            </div>
+
             <button type="submit" class="btn btn-primary">Signup</button>
           </form>
         </div>

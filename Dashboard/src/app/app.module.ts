@@ -19,6 +19,7 @@ import { SchoolPerformanceClassnameSubjectnameComponent } from './components/sch
 import { SchoolPerformanceClassnameComponent } from './components/school-performance-classname/school-performance-classname.component';
 import { SuperUserDashboardComponent } from './components/super-user-dashboard/super-user-dashboard.component';
 import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
+import { StudentDashboardComponent } from './components/student-dashboard/student-dashboard.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { AdminDashboardComponent } from './components/admin-dashboard/admin-dash
     SchoolPerformanceClassnameSubjectnameComponent,
     SchoolPerformanceClassnameComponent,
     SuperUserDashboardComponent,
-    AdminDashboardComponent
+    AdminDashboardComponent,
+    StudentDashboardComponent
   ],
   imports: [
     BrowserModule,

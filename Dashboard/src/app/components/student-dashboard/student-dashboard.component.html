@@ -1,0 +1,38 @@
+<div class="container">
+    <div class="card m-2 p-2">
+        <div class="card-body">
+            <h5 class="card-title">Student Data</h5>
+            <p class="card-text"><strong>Student Name:</strong> {{ student.studentName }}</p>
+            <p class="card-text"><strong>School Name:</strong> {{ student.schoolName }}</p>
+            <p class="card-text"><strong>Class Name:</strong> {{ student.className }}</p>
+            <p class="card-text"><strong>Session:</strong> {{ student.session }}</p>
+            <h6 class="card-subtitle mb-2 text-muted"><strong>Marks:</strong></h6>
+            <ul class="list-group">
+                <li class="list-group-item" *ngFor="let mark of student.marks">
+                    <strong>Subject Name:</strong> {{ mark.subjectName }}
+                    <br>
+                    <strong>Marks:</strong> {{ mark.marks }}
+                </li>
+            </ul>
+            <p class="card-text"><strong>Average Marks:</strong> {{ calculateAverageMarks() }}</p>
+        </div>
+    </div>
+
+    <div class="card m-2 p-2">
+        <div class="card-body">
+            <h5 class="card-title">Topper's Data</h5>
+            <p class="card-text"><strong>Student Name:</strong> {{ topper.studentName }}</p>
+            <p class="card-text"><strong>School Name:</strong> {{ topper.schoolName }}</p>
+            <p class="card-text"><strong>Class Name:</strong> {{ topper.className }}</p>
+            <p class="card-text"><strong>Session:</strong> {{ topper.session }}</p>
+            <h6 class="card-subtitle mb-2 text-muted">Marks:</h6>
+            <ul class="list-group">
+                <li class="list-group-item" *ngFor="let mark of topper.marks">
+                    <strong>Subject Name:</strong> {{ mark.subjectName }}
+                    <br>
+                    <strong>Marks:</strong> {{ mark.marks }}
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
