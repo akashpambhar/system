@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { StudentService } from 'src/app/services/student.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from 'src/app/services/auth.service';
 
 
 @Component({
@@ -14,7 +15,7 @@ export class StudentDashboardComponent implements OnInit {
   topper : any;
   averageMarks : any;
 
-  constructor(private studentService: StudentService, private route: ActivatedRoute) { }
+  constructor(private studentService: StudentService, private route: ActivatedRoute, private authService : AuthService, private router : Router) { }
 
   ngOnInit(): void {
     const param = this.route.snapshot.paramMap.get("studentId");
@@ -28,5 +29,12 @@ export class StudentDashboardComponent implements OnInit {
   calculateAverageMarks(): number {
     const totalMarks = this.student.marks.reduce((acc : any, mark:any) => acc + mark.marks, 0);
     return totalMarks / this.student.marks.length;
+  }
+
+  logout() {
+    this.authService.logout().subscribe(() => {
+      this.authService.removeToken();
+      this.router.navigate(['/']);
+    })
   }
 }
