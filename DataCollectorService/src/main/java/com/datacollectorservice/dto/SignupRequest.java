@@ -25,4 +25,6 @@ public class SignupRequest {
     private Set<String> roles;
 
     private List<String> assignedSchool;
+
+    private String studentId;
 }

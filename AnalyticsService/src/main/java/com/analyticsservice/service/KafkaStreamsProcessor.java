@@ -111,8 +111,6 @@ public class KafkaStreamsProcessor {
     )
     public void calculateAverage(School school) {
         List<Student> students = school.getStudents();
-        logger.info("Here :: ");
-        logger.info(school.toString());
         Map<String, Double> subjectWiseAverage = new HashMap<>();
         double totalAverage = 0;
 

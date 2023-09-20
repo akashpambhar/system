@@ -9,6 +9,8 @@ import { ReportComponent } from './components/report/report.component';
 import { SuperUserDashboardComponent } from './components/super-user-dashboard/super-user-dashboard.component';
 import { SuperAdminGuard } from './super-admin.guard';
 import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
+import { StudentDashboardComponent } from './components/student-dashboard/student-dashboard.component';
+import {StudentGuard} from "./student.guard";
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -16,7 +18,8 @@ const routes: Routes = [
   { path: 'admin-dashboard', component: AdminDashboardComponent, canActivate: [AdminGuard] },
   { path: 'student', component: StudentComponent, canActivate: [AdminGuard] },
   { path: 'average', component: MarksComponent, canActivate: [TeacherGuard] },
-  { path: 'report', component: ReportComponent }
+  { path: 'report', component: ReportComponent },
+  { path: 'student-dashboard/:studentId', component: StudentDashboardComponent, canActivate: [StudentGuard] },
 ];
 
 @NgModule({

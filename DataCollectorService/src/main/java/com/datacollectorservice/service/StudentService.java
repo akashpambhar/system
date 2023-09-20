@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 
 @Service
 public class StudentService {
@@ -78,7 +79,6 @@ public class StudentService {
                 student.setSession(line[1]);
                 student.setStudentName(line[3]);
                 student.setClassName(line[2]);
-                logger.info("School Name :" + line[2]);
 
                 List<Marks> marksList = new ArrayList<>();
                 for (int i = 4; i < line.length - 1; i += 2) {
@@ -123,6 +123,10 @@ public class StudentService {
         return studentRepository.findAll();
     }
 
+    public List<Student> getAllStudentsFromSchool(String schoolName) {
+        return studentRepository.findStudentsBySchoolNameIgnoreCase(schoolName);
+    }
+
     public Optional<Student> getStudentById(String Id) {
         return studentRepository.findById(Id);
     }
@@ -144,7 +148,7 @@ public class StudentService {
         return schoolAverageRepository.findAll();
     }
 
-    private void saveUserReport(String schoolName, String className, Integer count){
+    private void saveUserReport(String schoolName, String className, Integer count) {
         UserReport userReport = new UserReport();
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         userReport.setUsername(userDetails.getUsername());
@@ -154,14 +158,13 @@ public class StudentService {
         userReportRepository.save(userReport);
     }
 
-    private void saveAndCollectClassWiseRecordCount(School school){
+    private void saveAndCollectClassWiseRecordCount(School school) {
         Map<String, Integer> classWiseRecordCount = new HashMap<>();
 
-        for(Student student : school.getStudents()){
-            if(classWiseRecordCount.get(student.getClassName()) != null){
+        for (Student student : school.getStudents()) {
+            if (classWiseRecordCount.get(student.getClassName()) != null) {
                 classWiseRecordCount.put(student.getClassName(), classWiseRecordCount.get(student.getClassName()) + 1);
-            }
-            else
+            } else
                 classWiseRecordCount.put(student.getClassName(), 1);
         }
 
@@ -179,7 +182,7 @@ public class StudentService {
         return chartRepository.save(chartData);
     }
 
-    public List<UserReport> getAllUserReportByUsername(){
+    public List<UserReport> getAllUserReportByUsername() {
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         Optional<User> user = userRepository.findByUsername(userDetails.getUsername());
@@ -187,16 +190,16 @@ public class StudentService {
         return userReportRepository.findAllByUsernameIs(user.get().getUsername());
     }
 
-    public Set<String> getSchools(){
+    public Set<String> getSchools() {
         List<School> schools = schoolRepository.findAllByOrderBySchoolName();
         Set<String> schoolSet = new HashSet<>();
-        for(School school: schools){
+        for (School school : schools) {
             schoolSet.add(school.getSchoolName());
         }
         return schoolSet;
     }
 
-    public List<String> getSchoolOfAdmin(){
+    public List<String> getSchoolOfLoggedInUser() {
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         Optional<User> user = userRepository.findByUsername(userDetails.getUsername());
@@ -214,13 +217,68 @@ public class StudentService {
 
         Optional<User> user = userRepository.findByUsername(userDetails.getUsername());
 
-        for (String assignedSchool: user.get().getAssignedSchool()) {
-            if(assignedSchool.equalsIgnoreCase(schoolName)){
+        for (String assignedSchool : user.get().getAssignedSchool()) {
+            if (assignedSchool.equalsIgnoreCase(schoolName)) {
                 isOk = true;
                 break;
             }
         }
 
         if (!isOk) throw new CustomException("not allowed to add school");
+    }
+
+    public List<Student> getStudentsForStudentDashboard(String id) {
+        List<Student> students = studentRepository.findAll();
+
+        Optional<Student> foundStudent = students.stream()
+                .filter(student -> student.getId().equals(id))
+                .findFirst();
+
+        logger.info(foundStudent.get().toString());
+
+        Student topper = new Student();
+
+        double maxMarks = 0;
+
+        for (Student student : students) {
+            String className = student.getClassName();
+            double marks = student.getMarks().stream().mapToDouble(Marks::getMarks).sum();
+
+            if (className.equalsIgnoreCase(foundStudent.get().getClassName()) && marks > maxMarks) {
+                topper = student;
+                maxMarks = marks;
+            }
+        }
+
+        students.clear();
+
+        students.add(foundStudent.get());
+        students.add(topper);
+
+        return students;
+    }
+
+    public Map<String, Student> getClassWiseToppersFromSchool(String schoolName){
+        List<Student> students = studentRepository.findStudentsBySchoolNameIgnoreCase(schoolName);
+
+        Map<String, Student> maxMarksPerClass = new HashMap<>();
+        double marks, maxMarks;
+
+
+        for (Student student : students) {
+            String className = student.getClassName();
+            marks = student.getMarks().stream().mapToDouble(Marks::getMarks).sum();
+
+            if (maxMarksPerClass.containsKey(className)) {
+                maxMarks = maxMarksPerClass.get(className).getMarks().stream().mapToDouble(Marks::getMarks).sum();
+                if (marks > maxMarks) {
+                    maxMarksPerClass.put(className, student);
+                }
+            } else {
+                maxMarksPerClass.put(className, student);
+            }
+        }
+
+        return maxMarksPerClass;
     }
 }

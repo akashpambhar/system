@@ -6,13 +6,13 @@ import {AuthService} from "./services/auth.service";
 @Injectable({
   providedIn: 'root'
 })
-export class SuperAdminGuard implements CanActivate {
+export class StudentGuard implements CanActivate {
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     const userRole = this.authService.getRole();
 
-    if (userRole === 'ROLE_SUPERUSER') {
+    if (userRole === 'ROLE_STUDENT') {
       return true;
     } else {
       this.router.navigate(['/']);

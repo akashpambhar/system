@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface StudentRepository extends MongoRepository<Student, String> {
 
     public List<Student> findByStudentNameIgnoreCase(String name);
+
+    public List<Student> findStudentsBySchoolNameIgnoreCase(String schoolName);
 }

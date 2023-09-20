@@ -1,5 +1,6 @@
 package com.datacollectorservice.security.jwt;
 
+import com.datacollectorservice.repository.UserRepository;
 import com.datacollectorservice.security.service.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -7,6 +8,7 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.GrantedAuthority;
@@ -30,6 +32,9 @@ public class JwtUtils {
 
     @Value("${system.app.jwtCookieName}")
     private String jwtCookie;
+
+    @Autowired
+    private UserRepository userRepository;
 
     private Set<String> invalidatedTokens = new HashSet<>();
 
@@ -90,6 +95,7 @@ public class JwtUtils {
         return Jwts.builder()
                 .setSubject(username)
                 .claim("roles", roles)
+                .claim("studentId", userRepository.findByUsername(username).get().getStudentId())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(key(), SignatureAlgorithm.HS256)

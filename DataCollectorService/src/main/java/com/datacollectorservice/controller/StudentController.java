@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -93,8 +94,26 @@ public class StudentController {
     }
 
     @GetMapping("/school/admin")
-    @PreAuthorize("hasRole('ADMIN')")
-    public List<String> getSchoolListOfAdmin(){
-        return studentService.getSchoolOfAdmin();
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+    public List<String> getSchoolListOfLoggedInUser(){
+        return studentService.getSchoolOfLoggedInUser();
+    }
+
+    @GetMapping("/student/school/{schoolName}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+    public List<Student> getAllStudentsFromSchool(@PathVariable String schoolName) {
+        return studentService.getAllStudentsFromSchool(schoolName);
+    }
+
+    @GetMapping("/student/dashboard/{studentId}")
+    @PreAuthorize("hasRole('STUDENT')")
+    public List<Student> getStudentsForStudentDashboard(@PathVariable String studentId){
+        return studentService.getStudentsForStudentDashboard(studentId);
+    }
+
+    @GetMapping("/student/toppers/{schoolName}")
+    @PreAuthorize("hasRole('TEACHER')")
+    public Map<String, Student> getClassWiseToppersFromSchool(@PathVariable String schoolName){
+        return studentService.getClassWiseToppersFromSchool(schoolName);
     }
 }
